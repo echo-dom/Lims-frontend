@@ -1,0 +1,31 @@
+const columns = [
+  { label: "主键ID", prop: "sampleProgramsId", width: 160 },
+  { label: "原系统ID", prop: "originalId", width: 140, editable: true, editType: "text" },
+  { label: "执行标准编号", prop: "spCode", width: 160, editable: true, editType: "text" },
+  { label: "备用标准编号", prop: "spCodeAlt", width: 160, editable: true, editType: "text" },
+  { label: "测试规则", prop: "testRules", width: 200, editable: true, editType: "text" },
+  { label: "标准ID", prop: "criterionId", width: 140, editable: true, editType: "text" },
+  { label: "版本号", prop: "version", width: 120, editable: true, editType: "text" },
+  { label: "领域ID", prop: "domainId", width: 140, editable: true, editType: "text" },
+  { label: "领域名称", prop: "domainName", width: 160, editable: true, editType: "text" },
+  { label: "样品类型", prop: "sampleType", width: 140 },
+  { label: "完整类型", prop: "fullType", width: 140 },
+  { label: "详细名称", prop: "detailName", width: 180 },
+  { label: "状态", prop: "status", width: 120 },
+  { label: "冻结标志", prop: "freezeFlag", width: 120 },
+  { label: "是否校准", prop: "isCal", width: 120 },
+  { label: "显示状态", prop: "dispStatus", width: 120 },
+  { label: "冻结者", prop: "freezeBy", width: 120 },
+  { label: "冻结描述", prop: "freezerDesc", width: 200 },
+  { label: "冻结时间", prop: "freezeTime", width: 160, type: "date", editable: true, editType: "date" },
+  { label: "记录者描述", prop: "recorderDesc", width: 180 },
+  { label: "创建者描述", prop: "createrDesc", width: 180 },
+  { label: "创建者代码", prop: "createrCode", width: 140 },
+  { label: "创建日期", prop: "createrDate", width: 160, type: "date" },
+  { label: "开始时间", prop: "startTime", width: 160, type: "date" },
+  { label: "排序", prop: "sorter", width: 120, editable: true, editType: "number" },
+  { label: "备注", prop: "remark", width: 200 },
+]
+
+export default columns
+

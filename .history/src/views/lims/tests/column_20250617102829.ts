@@ -1,0 +1,33 @@
+const ismainpro_renderer = (scope:any)=>{
+    const {column,row} = scope;
+    if(row[column.property] == 1){
+        return '是'
+    }
+    return '否'
+}
+const column = [
+    { keyword:'', label: "项目序号", prop: "SORTER", width: "150" },
+    { keyword:'', label: "项目ID", prop: "TESTSID", width: "150" },
+    { keyword:'', label: "项目编码", prop: "TESTCODE", width: "150",editable: true,editType:'text' },
+    { keyword:'', label: "项目名称", prop: "TESTNAME", width: "150",editable: true,editType:'text' },
+    { keyword:'', label: "检验项目说明", prop: "TESTEXPLAIN", width: "140",editable: true,editType:'text' },
+    { keyword:'', label: "英文缩写", prop: "customerId", width: "140" ,editable: true,editType:'text'},
+    { keyword:'', label: "四级分类", prop: "FULLTYPE", width: "140" },
+    { keyword:'', label: "领域代码", prop: "DOMAINID", width: "140",type:"date",editable: true,editType:'date' },
+    { keyword:'', label: "项目类型ID", prop: "TESTCATEGORYID", width: "140",type:"date" },
+    { keyword:'', label: "项目类型名称", prop: "TESTCATENAME", width: "140",type:"date" },
+    { keyword:'', label: "微生物标识 (0/1)", prop: "wswflag", width: "140" },
+    { keyword:'', label: "报告中显示名称", prop: "NAMEINREPORT", width: "140", },
+    { keyword:'', label: "原始记录编码", prop: "ORIGINALCODE", width: "140" },
+    { keyword:'', label: "制样方法", prop: "samplingMethod", width: "140" },
+    { keyword:'', label: "历史检验人", prop: "HISTORYPERSON", width: "160", },
+    { keyword:'', label: "科室", prop: "DEPT", width: "160", },
+    { keyword:'', label: "状态", prop: "STATUS", width: "160",},
+
+
+];
+
+export default column;
+
+
+
