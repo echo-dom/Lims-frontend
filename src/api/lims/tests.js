@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询检验项目（LIMS_TESTS）列表
+// 查询方案项目列表
 export function listTests(query) {
   return request({
     url: '/lims/tests/list',
@@ -9,15 +9,15 @@ export function listTests(query) {
   })
 }
 
-// 查询检验项目（LIMS_TESTS）详细
-export function getTests(TESTSID) {
+// 查询方案项目详细
+export function getTests(spTestsId) {
   return request({
-    url: '/lims/tests/' + TESTSID,
+    url: '/lims/tests/' + spTestsId,
     method: 'get'
   })
 }
 
-// 新增检验项目（LIMS_TESTS）
+// 新增方案项目
 export function addTests(data) {
   return request({
     url: '/lims/tests',
@@ -26,7 +26,7 @@ export function addTests(data) {
   })
 }
 
-// 修改检验项目（LIMS_TESTS）
+// 修改方案项目
 export function updateTests(data) {
   return request({
     url: '/lims/tests',
@@ -35,10 +35,10 @@ export function updateTests(data) {
   })
 }
 
-// 删除检验项目（LIMS_TESTS）
-export function delTests(TESTSID) {
+// 删除方案项目
+export function delTests(spTestsId) {
   return request({
-    url: '/lims/tests/' + TESTSID,
+    url: '/lims/tests/' + spTestsId,
     method: 'delete'
   })
 }

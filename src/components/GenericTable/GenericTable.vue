@@ -100,6 +100,9 @@
                                                     {{ scope.row[col.prop] ? formatDateByYMD(scope.row[col.prop],
                                                     'yyyy-MM-dd') : '' }}
                                                 </template>
+                                                <template v-else-if="col.editType === 'select' && col.options">
+                                                    {{ col.options.find(opt => opt.value == scope.row[col.prop])?.label || scope.row[col.prop] }}
+                                                </template>
                                                 <template v-else>
                                                     {{ scope.row[col.prop] }}
                                                 </template>
@@ -121,6 +124,9 @@
                                                 <template v-if="col.type === 'date'">
                                                     {{ scope.row[col.prop] ? formatDateByYMD(scope.row[col.prop],
                                                     'yyyy-MM-dd') : '' }}
+                                                </template>
+                                                <template v-else-if="col.editType === 'select' && col.options">
+                                                    {{ col.options.find(opt => opt.value == scope.row[col.prop])?.label || scope.row[col.prop] }}
                                                 </template>
                                                 <template v-else>
                                                     {{ scope.row[col.prop] }}

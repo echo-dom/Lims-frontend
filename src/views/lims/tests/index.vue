@@ -1,252 +1,705 @@
 <template>
-  <div style="height:calc(100vh - 84px); ">
-    <GenericTable :columnList="columnList" :buttonlist="buttons" :updateDataApi="updateTests" :getDataApi="listTests"
-      @handleSelectionChange="handleSelectionChange" @handleRowClick="handleRowClick" @dataLoaded="onDataLoaded" />
-   
-    <el-dialog v-model="open"  width="80%" height="80%"  fullscreen >
-      <template #header>
-        
-      </template>
-      <div  class="form-card bg-white rounded-2xl  form-container">
-        <!-- 表单头部 -->
-        <div class="form-header p-6 flex items-center">
-          <div class="sample-icon w-14 h-14 rounded-xl flex items-center justify-center mr-4">
-            <i class="fas fa-flask text-white text-2xl"></i>
-          </div>
-          <div>
-            <div class="text-xl font-bold text-white">新增检测样品</div>
-            <p class="text-blue-100 mt-1">实验室样品管理系统</p>
-          </div>
-          
-        </div>
-        <el-scrollbar>
+  <div class="app-container">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="原系统ID" prop="originalId">
+        <el-input
+          v-model="queryParams.originalId"
+          placeholder="请输入原系统ID"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="检测项目ID" prop="testsId">
+        <el-input
+          v-model="queryParams.testsId"
+          placeholder="请输入检测项目ID"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="执行标准ID" prop="sampleProgramsId">
+        <el-input
+          v-model="queryParams.sampleProgramsId"
+          placeholder="请输入执行标准ID"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="项目ID" prop="projectId">
+        <el-input
+          v-model="queryParams.projectId"
+          placeholder="请输入项目ID"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="执行标准代码" prop="spCode">
+        <el-input
+          v-model="queryParams.spCode"
+          placeholder="请输入执行标准代码"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="测试别名" prop="testAlias">
+        <el-input
+          v-model="queryParams.testAlias"
+          placeholder="请输入测试别名"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="测试分类ID" prop="testCateId">
+        <el-input
+          v-model="queryParams.testCateId"
+          placeholder="请输入测试分类ID"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="项目代码" prop="programCode">
+        <el-input
+          v-model="queryParams.programCode"
+          placeholder="请输入项目代码"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="数量" prop="qty">
+        <el-input
+          v-model="queryParams.qty"
+          placeholder="请输入数量"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="数量单位" prop="qtyUnits">
+        <el-input
+          v-model="queryParams.qtyUnits"
+          placeholder="请输入数量单位"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="价格" prop="price">
+        <el-input
+          v-model="queryParams.price"
+          placeholder="请输入价格"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="附加价格" prop="addPrice">
+        <el-input
+          v-model="queryParams.addPrice"
+          placeholder="请输入附加价格"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="价格单位" prop="priceUnits">
+        <el-input
+          v-model="queryParams.priceUnits"
+          placeholder="请输入价格单位"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="评估规则" prop="evaluateRule">
+        <el-input
+          v-model="queryParams.evaluateRule"
+          placeholder="请输入评估规则"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="COP编号" prop="copNo">
+        <el-input
+          v-model="queryParams.copNo"
+          placeholder="请输入COP编号"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="低限A" prop="lowA">
+        <el-input
+          v-model="queryParams.lowA"
+          placeholder="请输入低限A"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="高限A" prop="highA">
+        <el-input
+          v-model="queryParams.highA"
+          placeholder="请输入高限A"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="高限单位" prop="highAUnit">
+        <el-input
+          v-model="queryParams.highAUnit"
+          placeholder="请输入高限单位"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="单位" prop="units">
+        <el-input
+          v-model="queryParams.units"
+          placeholder="请输入单位"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="是否退休" prop="isRetire">
+        <el-input
+          v-model="queryParams.isRetire"
+          placeholder="请输入是否退休"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="是否主项目" prop="isMainPro">
+        <el-input
+          v-model="queryParams.isMainPro"
+          placeholder="请输入是否主项目"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="冻结标志" prop="freezeFlag">
+        <el-input
+          v-model="queryParams.freezeFlag"
+          placeholder="请输入冻结标志"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="默认测试" prop="defaultTest">
+        <el-input
+          v-model="queryParams.defaultTest"
+          placeholder="请输入默认测试"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="审核标志" prop="auditFlag">
+        <el-input
+          v-model="queryParams.auditFlag"
+          placeholder="请输入审核标志"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="审核级别" prop="auditLevel">
+        <el-input
+          v-model="queryParams.auditLevel"
+          placeholder="请输入审核级别"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="行审核" prop="rowAudit">
+        <el-input
+          v-model="queryParams.rowAudit"
+          placeholder="请输入行审核"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="抽样计划" prop="drawPlan">
+        <el-input
+          v-model="queryParams.drawPlan"
+          placeholder="请输入抽样计划"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="部门" prop="dept">
+        <el-input
+          v-model="queryParams.dept"
+          placeholder="请输入部门"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="成本中心ID" prop="ccId">
+        <el-input
+          v-model="queryParams.ccId"
+          placeholder="请输入成本中心ID"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="提交公司" prop="submitCorp">
+        <el-input
+          v-model="queryParams.submitCorp"
+          placeholder="请输入提交公司"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="特殊组名称" prop="specialGroupName">
+        <el-input
+          v-model="queryParams.specialGroupName"
+          placeholder="请输入特殊组名称"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="主组汇总" prop="mainGroupZum">
+        <el-input
+          v-model="queryParams.mainGroupZum"
+          placeholder="请输入主组汇总"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="组编号" prop="groupNums">
+        <el-input
+          v-model="queryParams.groupNums"
+          placeholder="请输入组编号"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="开始使用日期" prop="startUseDate">
+        <el-date-picker clearable
+          v-model="queryParams.startUseDate"
+          type="date"
+          value-format="YYYY-MM-DD"
+          placeholder="请选择开始使用日期">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="到期日期" prop="expirationDate">
+        <el-date-picker clearable
+          v-model="queryParams.expirationDate"
+          type="date"
+          value-format="YYYY-MM-DD"
+          placeholder="请选择到期日期">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="版本" prop="version">
+        <el-input
+          v-model="queryParams.version"
+          placeholder="请输入版本"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="工作流ID" prop="workflowId">
+        <el-input
+          v-model="queryParams.workflowId"
+          placeholder="请输入工作流ID"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="排序" prop="sorter">
+        <el-input
+          v-model="queryParams.sorter"
+          placeholder="请输入排序"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="审核人代码" prop="auditorCode">
+        <el-input
+          v-model="queryParams.auditorCode"
+          placeholder="请输入审核人代码"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="审核时间" prop="auditTime">
+        <el-date-picker clearable
+          v-model="queryParams.auditTime"
+          type="date"
+          value-format="YYYY-MM-DD"
+          placeholder="请选择审核时间">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="冻结人代码" prop="freezerCode">
+        <el-input
+          v-model="queryParams.freezerCode"
+          placeholder="请输入冻结人代码"
+          clearable
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="冻结时间" prop="freezeTime">
+        <el-date-picker clearable
+          v-model="queryParams.freezeTime"
+          type="date"
+          value-format="YYYY-MM-DD"
+          placeholder="请选择冻结时间">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
 
-        <!-- 表单内容 -->
-        <div style="height: 70vh;" class="p-6 md:p-8">
-          <el-form ref="sampleForm" :model="formData" :rules="rules1" label-width="120px" class="space-y-6">
-            <!-- 样品基本信息 -->
-            <div class="border-b border-gray-200 pb-6">
-              <div class="text-lg font-semibold text-gray-800 mb-5 flex items-center">
-                <i class="fas fa-vial text-form mr-2"></i> 样品基本信息
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <!-- 样品名称 -->
-                <el-form-item label="样品名称" prop="name" class="m-0">
-                  <el-input v-model="formData.name" placeholder="请输入样品名称" class="rounded-lg">
-                    <template #prefix>
-                      <i class="el-icon-box text-gray-400"></i>
-                    </template>
-                  </el-input>
-                </el-form-item>
-                <!-- 样品编号 -->
-                <el-form-item label="样品编号" prop="code" class="m-0">
-                  <el-input v-model="formData.code" placeholder="系统自动生成" disabled class="rounded-lg bg-gray-100">
-                    <template #prefix>
-                      <i class="el-icon-document text-gray-400"></i>
-                    </template>
-                  </el-input>
-                </el-form-item>
-                <!-- 样品类型 -->
-                <el-form-item label="样品类型" prop="type" class="m-0">
-                  <el-select v-model="formData.type" placeholder="请选择样品类型" class="w-full rounded-lg">
-                    <el-option label="固体" value="solid" />
-                    <el-option label="液体" value="liquid" />
-                    <el-option label="气体" value="gas" />
-                    <el-option label="粉末" value="powder" />
-                    <el-option label="其他" value="other" />
-                  </el-select>
-                </el-form-item>
-                <!-- 样品数量 -->
-                <el-form-item label="样品数量" prop="quantity" class="m-0">
-                  <el-input v-model.number="formData.quantity" placeholder="请输入样品数量" class="rounded-lg">
-                    <template #prefix>
-                      <i class="el-icon-s-data text-gray-400"></i>
-                    </template>
-                    <template #append>
-                      <div class="w-20">
-                        <el-select v-model="formData.unit" class="w-full">
-                          <el-option label="克" value="g" />
-                          <el-option label="毫升" value="ml" />
-                          <el-option label="件" value="pcs" />
-                        </el-select>
-                      </div>
-                    </template>
-                  </el-input>
-                </el-form-item>
-                <!-- 送样日期 -->
-                <el-form-item label="送样日期" prop="submitDate" class="m-0">
-                  <el-date-picker v-model="formData.submitDate" type="date" placeholder="请选择送样日期"
-                    class="w-full rounded-lg" />
-                </el-form-item>
-                <!-- 期望完成日期 -->
-                <el-form-item label="期望完成日期" prop="expectedDate" class="m-0">
-                  <el-date-picker v-model="formData.expectedDate" type="date" placeholder="请选择期望完成日期"
-                    class="w-full rounded-lg" />
-                </el-form-item>
-              </div>
-            </div>
-            <!-- 检测要求 -->
-            <div class="border-b border-gray-200 pb-6">
-              <div class="text-lg font-semibold text-gray-800 mb-5 flex items-center">
-                <i class="fas fa-microscope text-form mr-2"></i> 检测要求
-              </div>
-              <!-- 检测项目 -->
-              <el-form-item label="检测项目" prop="tests" class="mb-6">
-                <el-checkbox-group v-model="formData.tests" class="flex flex-wrap gap-4">
-                  <el-checkbox label="ph值检测" class="!m-0">
-                    <div class="p-3 border border-gray-200 rounded-lg transition-all hover:border-primary">
-                      <div class="font-semibold">pH值检测</div>
-                      <div class="text-xs text-gray-500 mt-1">酸碱度测定</div>
-                    </div>
-                  </el-checkbox>
-                  <el-checkbox label="重金属检测" class="!m-0">
-                    <div class="p-3 border border-gray-200 rounded-lg transition-all hover:border-primary">
-                      <div class="font-semibold">重金属检测</div>
-                      <div class="text-xs text-gray-500 mt-1">铅、汞等含量</div>
-                    </div>
-                  </el-checkbox>
-                  <el-checkbox label="微生物检测" class="!m-0">
-                    <div class="p-3 border border-gray-200 rounded-lg transition-all hover:border-primary">
-                      <div class="font-semibold">微生物检测</div>
-                      <div class="text-xs text-gray-500 mt-1">菌落总数等</div>
-                    </div>
-                  </el-checkbox>
-                  <el-checkbox label="成分分析" class="!m-0">
-                    <div class="p-3 border border-gray-200 rounded-lg transition-all hover:border-primary">
-                      <div class="font-semibold">成分分析</div>
-                      <div class="text-xs text-gray-500 mt-1">主要成分及含量</div>
-                    </div>
-                  </el-checkbox>
-                </el-checkbox-group>
-              </el-form-item>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 检测标准 -->
-                <el-form-item label="检测标准" prop="standard" class="m-0">
-                  <el-select v-model="formData.standard" placeholder="请选择检测标准" class="w-full rounded-lg">
-                    <el-option label="GB 标准" value="gb" />
-                    <el-option label="ISO 标准" value="iso" />
-                    <el-option label="ASTM 标准" value="astm" />
-                    <el-option label="企业标准" value="enterprise" />
-                    <el-option label="其他标准" value="other" />
-                  </el-select>
-                </el-form-item>
-                <!-- 检测方法 -->
-                <el-form-item label="检测方法" prop="method" class="m-0">
-                  <el-select v-model="formData.method" placeholder="请选择检测方法" class="w-full rounded-lg">
-                    <el-option label="光谱分析法" value="spectrum" />
-                    <el-option label="色谱分析法" value="chromatography" />
-                    <el-option label="质谱分析法" value="mass" />
-                    <el-option label="电化学法" value="electrochemistry" />
-                  </el-select>
-                </el-form-item>
-                <!-- 紧急程度 -->
-                <el-form-item label="紧急程度" prop="urgency" class="m-0">
-                  <el-radio-group v-model="formData.urgency" class="flex flex-wrap gap-4">
-                    <el-radio label="normal" class="!m-0">
-                      <div class="p-3 border border-gray-200 rounded-lg transition-all hover:border-green-500">
-                        <div class="font-semibold">普通</div>
-                        <div class="text-xs text-gray-500 mt-1">5-7个工作日</div>
-                      </div>
-                    </el-radio>
-                    <el-radio label="urgent" class="!m-0">
-                      <div class="p-3 border border-gray-200 rounded-lg transition-all hover:border-yellow-500">
-                        <div class="font-semibold">加急</div>
-                        <div class="text-xs text-gray-500 mt-1">3-5个工作日</div>
-                      </div>
-                    </el-radio>
-                    <el-radio label="emergency" class="!m-0">
-                      <div class="p-3 border border-gray-200 rounded-lg transition-all hover:border-red-500">
-                        <div class="font-semibold">特急</div>
-                        <div class="text-xs text-gray-500 mt-1">1-3个工作日</div>
-                      </div>
-                    </el-radio>
-                  </el-radio-group>
-                </el-form-item>
-              </div>
-            </div>
-            <!-- 其他信息 -->
-            <div>
-              <div class="text-lg font-semibold text-gray-800 mb-5 flex items-center">
-                <i class="fas fa-file-alt text-form mr-2"></i> 其他信息
-              </div>
-              <!-- 备注 -->
-              <el-form-item label="备注" prop="remarks" class="m-0">
-                <el-input v-model="formData.remarks" type="textarea" :rows="4" placeholder="请输入样品特殊要求或其他说明"
-                  class="rounded-lg" />
-              </el-form-item>
-              <!-- 附件上传 -->
-              <el-form-item label="相关附件" prop="attachments" class="mt-6">
-                <el-upload action="#" multiple :on-change="handleFileChange" :on-remove="handleFileRemove"
-                  :file-list="formData.attachments" :auto-upload="false" class="w-full">
-                  <el-button type="primary" class="rounded-lg">
-                    <i class="el-icon-upload mr-2"></i>上传文件
-                  </el-button>
-                  <template #tip>
-                    <div class="el-upload__tip text-xs text-gray-500 mt-2">
-                      支持上传PDF、Word、Excel、图片等文件，单个文件不超过10MB
-                    </div>
-                  </template>
-                </el-upload>
-              </el-form-item>
-            </div>
-            
-          </el-form>
-        </div>
-      </el-scrollbar>
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="Plus"
+          @click="handleAdd"
+          v-hasPermi="['lims:tests:add']"
+        >新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="Edit"
+          :disabled="single"
+          @click="handleUpdate"
+          v-hasPermi="['lims:tests:edit']"
+        >修改</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="Delete"
+          :disabled="multiple"
+          @click="handleDelete"
+          v-hasPermi="['lims:tests:remove']"
+        >删除</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="Download"
+          @click="handleExport"
+          v-hasPermi="['lims:tests:export']"
+        >导出</el-button>
+      </el-col>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+    </el-row>
 
-      </div>
-      <!-- <SampleDetectionForm></SampleDetectionForm> -->
+    <el-table v-loading="loading" :data="testsList" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="主键ID" align="center" prop="spTestsId" />
+      <el-table-column label="原系统ID" align="center" prop="originalId" />
+      <el-table-column label="检测项目ID" align="center" prop="testsId" />
+      <el-table-column label="执行标准ID" align="center" prop="sampleProgramsId" />
+      <el-table-column label="项目ID" align="center" prop="projectId" />
+      <el-table-column label="执行标准代码" align="center" prop="spCode" />
+      <el-table-column label="方案测试名称" align="center" prop="spTestName" />
+      <el-table-column label="测试名称" align="center" prop="testName" />
+      <el-table-column label="测试别名" align="center" prop="testAlias" />
+      <el-table-column label="特殊测试名称" align="center" prop="specialTestName" />
+      <el-table-column label="测试分类ID" align="center" prop="testCateId" />
+      <el-table-column label="测试类型" align="center" prop="testType" />
+      <el-table-column label="方案类型" align="center" prop="profileType" />
+      <el-table-column label="项目代码" align="center" prop="programCode" />
+      <el-table-column label="数量" align="center" prop="qty" />
+      <el-table-column label="数量单位" align="center" prop="qtyUnits" />
+      <el-table-column label="价格" align="center" prop="price" />
+      <el-table-column label="附加价格" align="center" prop="addPrice" />
+      <el-table-column label="价格单位" align="center" prop="priceUnits" />
+      <el-table-column label="标准" align="center" prop="criterion" />
+      <el-table-column label="测试标准" align="center" prop="testCriterion" />
+      <el-table-column label="评估规则" align="center" prop="evaluateRule" />
+      <el-table-column label="COP编号" align="center" prop="copNo" />
+      <el-table-column label="低限A" align="center" prop="lowA" />
+      <el-table-column label="高限A" align="center" prop="highA" />
+      <el-table-column label="高限单位" align="center" prop="highAUnit" />
+      <el-table-column label="单位" align="center" prop="units" />
+      <el-table-column label="文本限制" align="center" prop="charLimits" />
+      <el-table-column label="数据参考" align="center" prop="dataReference" />
+      <el-table-column label="状态" align="center" prop="status" />
+      <el-table-column label="是否退休" align="center" prop="isRetire" />
+      <el-table-column label="是否主项目" align="center" prop="isMainPro" />
+      <el-table-column label="冻结标志" align="center" prop="freezeFlag" />
+      <el-table-column label="默认测试" align="center" prop="defaultTest" />
+      <el-table-column label="审核标志" align="center" prop="auditFlag" />
+      <el-table-column label="审核级别" align="center" prop="auditLevel" />
+      <el-table-column label="行审核" align="center" prop="rowAudit" />
+      <el-table-column label="显示状态" align="center" prop="dispStatus" />
+      <el-table-column label="报告类型" align="center" prop="reportType" />
+      <el-table-column label="报告备注" align="center" prop="reportRemark" />
+      <el-table-column label="抽样计划" align="center" prop="drawPlan" />
+      <el-table-column label="部门" align="center" prop="dept" />
+      <el-table-column label="成本中心ID" align="center" prop="ccId" />
+      <el-table-column label="提交公司" align="center" prop="submitCorp" />
+      <el-table-column label="特殊组名称" align="center" prop="specialGroupName" />
+      <el-table-column label="主组汇总" align="center" prop="mainGroupZum" />
+      <el-table-column label="组编号" align="center" prop="groupNums" />
+      <el-table-column label="开始使用日期" align="center" prop="startUseDate" width="180">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.startUseDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="到期日期" align="center" prop="expirationDate" width="180">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.expirationDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="版本" align="center" prop="version" />
+      <el-table-column label="方案描述" align="center" prop="profile" />
+      <el-table-column label="说明描述" align="center" prop="explainDesc" />
+      <el-table-column label="备注说明" align="center" prop="comments" />
+      <el-table-column label="规格分析物备注" align="center" prop="specAnalytesComments" />
+      <el-table-column label="工作流ID" align="center" prop="workflowId" />
+      <el-table-column label="排序" align="center" prop="sorter" />
+      <el-table-column label="记录者描述" align="center" prop="recorderDesc" />
+      <el-table-column label="审核人代码" align="center" prop="auditorCode" />
+      <el-table-column label="审核人描述" align="center" prop="auditorDesc" />
+      <el-table-column label="审核时间" align="center" prop="auditTime" width="180">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.auditTime, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="冻结人代码" align="center" prop="freezerCode" />
+      <el-table-column label="冻结人描述" align="center" prop="freezerDesc" />
+      <el-table-column label="冻结时间" align="center" prop="freezeTime" width="180">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.freezeTime, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template #default="scope">
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['lims:tests:edit']">修改</el-button>
+          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['lims:tests:remove']">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    
+    <pagination
+      v-show="total>0"
+      :total="total"
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      @pagination="getList"
+    />
+
+    <!-- 添加或修改方案项目对话框 -->
+    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+      <el-form ref="testsRef" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="原系统ID" prop="originalId">
+          <el-input v-model="form.originalId" placeholder="请输入原系统ID" />
+        </el-form-item>
+        <el-form-item label="检测项目ID" prop="testsId">
+          <el-input v-model="form.testsId" placeholder="请输入检测项目ID" />
+        </el-form-item>
+        <el-form-item label="执行标准ID" prop="sampleProgramsId">
+          <el-input v-model="form.sampleProgramsId" placeholder="请输入执行标准ID" />
+        </el-form-item>
+        <el-form-item label="项目ID" prop="projectId">
+          <el-input v-model="form.projectId" placeholder="请输入项目ID" />
+        </el-form-item>
+        <el-form-item label="执行标准代码" prop="spCode">
+          <el-input v-model="form.spCode" placeholder="请输入执行标准代码" />
+        </el-form-item>
+        <el-form-item label="方案测试名称" prop="spTestName">
+          <el-input v-model="form.spTestName" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="测试名称" prop="testName">
+          <el-input v-model="form.testName" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="测试别名" prop="testAlias">
+          <el-input v-model="form.testAlias" placeholder="请输入测试别名" />
+        </el-form-item>
+        <el-form-item label="特殊测试名称" prop="specialTestName">
+          <el-input v-model="form.specialTestName" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="测试分类ID" prop="testCateId">
+          <el-input v-model="form.testCateId" placeholder="请输入测试分类ID" />
+        </el-form-item>
+        <el-form-item label="项目代码" prop="programCode">
+          <el-input v-model="form.programCode" placeholder="请输入项目代码" />
+        </el-form-item>
+        <el-form-item label="数量" prop="qty">
+          <el-input v-model="form.qty" placeholder="请输入数量" />
+        </el-form-item>
+        <el-form-item label="数量单位" prop="qtyUnits">
+          <el-input v-model="form.qtyUnits" placeholder="请输入数量单位" />
+        </el-form-item>
+        <el-form-item label="价格" prop="price">
+          <el-input v-model="form.price" placeholder="请输入价格" />
+        </el-form-item>
+        <el-form-item label="附加价格" prop="addPrice">
+          <el-input v-model="form.addPrice" placeholder="请输入附加价格" />
+        </el-form-item>
+        <el-form-item label="价格单位" prop="priceUnits">
+          <el-input v-model="form.priceUnits" placeholder="请输入价格单位" />
+        </el-form-item>
+        <el-form-item label="标准" prop="criterion">
+          <el-input v-model="form.criterion" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="测试标准" prop="testCriterion">
+          <el-input v-model="form.testCriterion" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="评估规则" prop="evaluateRule">
+          <el-input v-model="form.evaluateRule" placeholder="请输入评估规则" />
+        </el-form-item>
+        <el-form-item label="COP编号" prop="copNo">
+          <el-input v-model="form.copNo" placeholder="请输入COP编号" />
+        </el-form-item>
+        <el-form-item label="低限A" prop="lowA">
+          <el-input v-model="form.lowA" placeholder="请输入低限A" />
+        </el-form-item>
+        <el-form-item label="高限A" prop="highA">
+          <el-input v-model="form.highA" placeholder="请输入高限A" />
+        </el-form-item>
+        <el-form-item label="高限单位" prop="highAUnit">
+          <el-input v-model="form.highAUnit" placeholder="请输入高限单位" />
+        </el-form-item>
+        <el-form-item label="单位" prop="units">
+          <el-input v-model="form.units" placeholder="请输入单位" />
+        </el-form-item>
+        <el-form-item label="文本限制" prop="charLimits">
+          <el-input v-model="form.charLimits" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="数据参考" prop="dataReference">
+          <el-input v-model="form.dataReference" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="是否退休" prop="isRetire">
+          <el-input v-model="form.isRetire" placeholder="请输入是否退休" />
+        </el-form-item>
+        <el-form-item label="是否主项目" prop="isMainPro">
+          <el-input v-model="form.isMainPro" placeholder="请输入是否主项目" />
+        </el-form-item>
+        <el-form-item label="冻结标志" prop="freezeFlag">
+          <el-input v-model="form.freezeFlag" placeholder="请输入冻结标志" />
+        </el-form-item>
+        <el-form-item label="默认测试" prop="defaultTest">
+          <el-input v-model="form.defaultTest" placeholder="请输入默认测试" />
+        </el-form-item>
+        <el-form-item label="审核标志" prop="auditFlag">
+          <el-input v-model="form.auditFlag" placeholder="请输入审核标志" />
+        </el-form-item>
+        <el-form-item label="审核级别" prop="auditLevel">
+          <el-input v-model="form.auditLevel" placeholder="请输入审核级别" />
+        </el-form-item>
+        <el-form-item label="行审核" prop="rowAudit">
+          <el-input v-model="form.rowAudit" placeholder="请输入行审核" />
+        </el-form-item>
+        <el-form-item label="报告备注" prop="reportRemark">
+          <el-input v-model="form.reportRemark" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="抽样计划" prop="drawPlan">
+          <el-input v-model="form.drawPlan" placeholder="请输入抽样计划" />
+        </el-form-item>
+        <el-form-item label="部门" prop="dept">
+          <el-input v-model="form.dept" placeholder="请输入部门" />
+        </el-form-item>
+        <el-form-item label="成本中心ID" prop="ccId">
+          <el-input v-model="form.ccId" placeholder="请输入成本中心ID" />
+        </el-form-item>
+        <el-form-item label="提交公司" prop="submitCorp">
+          <el-input v-model="form.submitCorp" placeholder="请输入提交公司" />
+        </el-form-item>
+        <el-form-item label="特殊组名称" prop="specialGroupName">
+          <el-input v-model="form.specialGroupName" placeholder="请输入特殊组名称" />
+        </el-form-item>
+        <el-form-item label="主组汇总" prop="mainGroupZum">
+          <el-input v-model="form.mainGroupZum" placeholder="请输入主组汇总" />
+        </el-form-item>
+        <el-form-item label="组编号" prop="groupNums">
+          <el-input v-model="form.groupNums" placeholder="请输入组编号" />
+        </el-form-item>
+        <el-form-item label="开始使用日期" prop="startUseDate">
+          <el-date-picker clearable
+            v-model="form.startUseDate"
+            type="date"
+            value-format="YYYY-MM-DD"
+            placeholder="请选择开始使用日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="到期日期" prop="expirationDate">
+          <el-date-picker clearable
+            v-model="form.expirationDate"
+            type="date"
+            value-format="YYYY-MM-DD"
+            placeholder="请选择到期日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="版本" prop="version">
+          <el-input v-model="form.version" placeholder="请输入版本" />
+        </el-form-item>
+        <el-form-item label="方案描述" prop="profile">
+          <file-upload v-model="form.profile"/>
+        </el-form-item>
+        <el-form-item label="说明描述" prop="explainDesc">
+          <el-input v-model="form.explainDesc" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="备注说明" prop="comments">
+          <el-input v-model="form.comments" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="规格分析物备注" prop="specAnalytesComments">
+          <el-input v-model="form.specAnalytesComments" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="工作流ID" prop="workflowId">
+          <el-input v-model="form.workflowId" placeholder="请输入工作流ID" />
+        </el-form-item>
+        <el-form-item label="排序" prop="sorter">
+          <el-input v-model="form.sorter" placeholder="请输入排序" />
+        </el-form-item>
+        <el-form-item label="记录者描述" prop="recorderDesc">
+          <el-input v-model="form.recorderDesc" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="审核人代码" prop="auditorCode">
+          <el-input v-model="form.auditorCode" placeholder="请输入审核人代码" />
+        </el-form-item>
+        <el-form-item label="审核人描述" prop="auditorDesc">
+          <el-input v-model="form.auditorDesc" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="审核时间" prop="auditTime">
+          <el-date-picker clearable
+            v-model="form.auditTime"
+            type="date"
+            value-format="YYYY-MM-DD"
+            placeholder="请选择审核时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="冻结人代码" prop="freezerCode">
+          <el-input v-model="form.freezerCode" placeholder="请输入冻结人代码" />
+        </el-form-item>
+        <el-form-item label="冻结人描述" prop="freezerDesc">
+          <el-input v-model="form.freezerDesc" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="冻结时间" prop="freezeTime">
+          <el-date-picker clearable
+            v-model="form.freezeTime"
+            type="date"
+            value-format="YYYY-MM-DD"
+            placeholder="请选择冻结时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="删除标志" prop="delFlag">
+          <el-input v-model="form.delFlag" placeholder="请输入删除标志" />
+        </el-form-item>
+      </el-form>
       <template #footer>
-        <!-- 状态提示 -->
-        <div class="text-center mt-8 text-gray-600 text-sm">
-          <i class="fas fa-info-circle mr-2"></i>提交后可在"检测管理"中查看进度
-        </div>
-        <!-- 表单操作按钮 -->
-        <div class="flex flex-wrap justify-center gap-4 pt-8">
-          <el-button type="primary" @click="submitForm1"
-            class="px-8 py-3 rounded-xl shadow-lg bg-gradient-to-r from-form to-blue-700 hover:opacity-90 transition-all">
-            <i class="fas fa-paper-plane mr-2"></i>提交检测申请
-          </el-button>
-          <el-button @click="resetForm" class="px-8 py-3 rounded-xl border border-gray-300 hover:bg-gray-50">
-            <i class="fas fa-redo mr-2"></i>重置表单
-          </el-button>
-        </div>
-<!--        
         <div class="dialog-footer">
-          <el-button @click="open = false">取消</el-button>
-          <el-button type="primary" @click="open = false">
-            确定
-          </el-button>
-        </div> -->
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
       </template>
     </el-dialog>
-    <el-drawer
-      v-model="showAnalytes"
-      title="分析项"
-      direction="rtl"
-      size="50%"
-    >
-      <analytes :id="selection?.testsid"></analytes>
-    </el-drawer>
-  </div>  
+  </div>
 </template>
 
-<script setup name="Sample">
-import GenericTable from '@/components/GenericTable/GenericTable.vue'
-import analytes from '../analytes/index.vue'
+<script setup name="Tests">
 import { listTests, getTests, delTests, addTests, updateTests } from "@/api/lims/tests"
-import column from './column';
-
-const columnList = column;
-
-
-const onDataLoaded = (data) => {
-  console.log('Data loaded:', data);
-}
 
 const { proxy } = getCurrentInstance()
-const showAnalytes = ref(false)
-const sampleList = ref([])
+
+const testsList = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
@@ -255,76 +708,92 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref("")
-const buttons = [
-  {
-    label: '新增',
-    hasPermi: 'lims:tests:add',
-    icon: 'Plus',
-    type: 'primary',
-    onClick: handleAdd
-  },
-  {
-    label: '修改',
-    hasPermi: 'lims:tests:edit',
-    icon: 'Edit',
-    type: 'success',
-    onClick: handleUpdate,
-    disabled: 'single'
-  },
-  {
-    label: '删除',
-    hasPermi: 'lims:tests:remove',
-    icon: 'Delete',
-    type: 'danger',
-    confirm: '确定要删除选中项吗？',
-    onClick: handleDelete,
-    disabled: 'multiple'
-  },
-  {
-    label: '导出',
-    hasPermi: 'lims:tests:export',
-    icon: 'Download',
-    type: 'warning',
-    onClick: handleExport
-    // disabled: true,
-    // tooltip: '暂无数据可导出'
-  }
-]
-const selection = ref({})
+
 const data = reactive({
   form: {},
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    sampleCode: null,
-    sampleName: null,
-    sampleTypeId: null,
-    customerId: null,
-    batchNumber: null,
-    productionDate: null,
-    expiryDate: null,
-    samplingDate: null,
-    samplingLocation: null,
-    sampleStatus: null,
-    storageLocation: null,
+    originalId: null,
+    testsId: null,
+    sampleProgramsId: null,
+    projectId: null,
+    spCode: null,
+    spTestName: null,
+    testName: null,
+    testAlias: null,
+    specialTestName: null,
+    testCateId: null,
+    testType: null,
+    profileType: null,
+    programCode: null,
+    qty: null,
+    qtyUnits: null,
+    price: null,
+    addPrice: null,
+    priceUnits: null,
+    criterion: null,
+    testCriterion: null,
+    evaluateRule: null,
+    copNo: null,
+    lowA: null,
+    highA: null,
+    highAUnit: null,
+    units: null,
+    charLimits: null,
+    dataReference: null,
+    status: null,
+    isRetire: null,
+    isMainPro: null,
+    freezeFlag: null,
+    defaultTest: null,
+    auditFlag: null,
+    auditLevel: null,
+    rowAudit: null,
+    dispStatus: null,
+    reportType: null,
+    reportRemark: null,
+    drawPlan: null,
+    dept: null,
+    ccId: null,
+    submitCorp: null,
+    specialGroupName: null,
+    mainGroupZum: null,
+    groupNums: null,
+    startUseDate: null,
+    expirationDate: null,
+    version: null,
+    profile: null,
+    explainDesc: null,
+    comments: null,
+    specAnalytesComments: null,
+    workflowId: null,
+    sorter: null,
+    recorderDesc: null,
+    auditorCode: null,
+    auditorDesc: null,
+    auditTime: null,
+    freezerCode: null,
+    freezerDesc: null,
+    freezeTime: null,
   },
   rules: {
-    sampleCode: [
-      { required: true, message: "样品编码不能为空", trigger: "blur" }
+    spCode: [
+      { required: true, message: "执行标准代码不能为空", trigger: "blur" }
     ],
-    sampleName: [
-      { required: true, message: "样品名称不能为空", trigger: "blur" }
+    spTestName: [
+      { required: true, message: "方案测试名称不能为空", trigger: "blur" }
     ],
   }
 })
 
 const { queryParams, form, rules } = toRefs(data)
 
-/** 查询LIMS样品列表 */
+/** 查询方案项目列表 */
 function getList() {
   loading.value = true
-  listSample(queryParams.value).then(response => {
-    sampleList.value = response.rows
+  listTests(queryParams.value).then(response => {
+    testsList.value = response.rows
     total.value = response.total
     loading.value = false
   })
@@ -339,25 +808,77 @@ function cancel() {
 // 表单重置
 function reset() {
   form.value = {
-    sampleId: null,
-    sampleCode: null,
-    sampleName: null,
-    sampleTypeId: null,
-    customerId: null,
-    batchNumber: null,
-    productionDate: null,
-    expiryDate: null,
-    samplingDate: null,
-    samplingLocation: null,
-    sampleStatus: null,
-    storageLocation: null,
+    spTestsId: null,
+    originalId: null,
+    testsId: null,
+    sampleProgramsId: null,
+    projectId: null,
+    spCode: null,
+    spTestName: null,
+    testName: null,
+    testAlias: null,
+    specialTestName: null,
+    testCateId: null,
+    testType: null,
+    profileType: null,
+    programCode: null,
+    qty: null,
+    qtyUnits: null,
+    price: null,
+    addPrice: null,
+    priceUnits: null,
+    criterion: null,
+    testCriterion: null,
+    evaluateRule: null,
+    copNo: null,
+    lowA: null,
+    highA: null,
+    highAUnit: null,
+    units: null,
+    charLimits: null,
+    dataReference: null,
+    status: null,
+    isRetire: null,
+    isMainPro: null,
+    freezeFlag: null,
+    defaultTest: null,
+    auditFlag: null,
+    auditLevel: null,
+    rowAudit: null,
+    dispStatus: null,
+    reportType: null,
+    reportRemark: null,
+    drawPlan: null,
+    dept: null,
+    ccId: null,
+    submitCorp: null,
+    specialGroupName: null,
+    mainGroupZum: null,
+    groupNums: null,
+    startUseDate: null,
+    expirationDate: null,
+    version: null,
+    profile: null,
+    explainDesc: null,
+    comments: null,
+    specAnalytesComments: null,
+    workflowId: null,
+    sorter: null,
+    recorderDesc: null,
+    auditorCode: null,
+    auditorDesc: null,
+    auditTime: null,
+    freezerCode: null,
+    freezerDesc: null,
+    freezeTime: null,
     createBy: null,
     createTime: null,
     updateBy: null,
     updateTime: null,
-    remark: null
+    remark: null,
+    delFlag: null
   }
-  proxy.resetForm("sampleRef")
+  proxy.resetForm("testsRef")
 }
 
 /** 搜索按钮操作 */
@@ -373,47 +894,42 @@ function resetQuery() {
 }
 
 // 多选框选中数据
-function handleSelectionChange(selection) { 
-  ids.value = selection.map(item => item.testsid)
+function handleSelectionChange(selection) {
+  ids.value = selection.map(item => item.spTestsId)
   single.value = selection.length != 1
   multiple.value = !selection.length
-}
-
-const handleRowClick = (sele)=>{
-  selection.value = sele
-  showAnalytes.value = true
 }
 
 /** 新增按钮操作 */
 function handleAdd() {
   reset()
   open.value = true
-  title.value = "添加LIMS样品"
+  title.value = "添加方案项目"
 }
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset()
-  const _TESTSID = row.TESTSID || ids.value
-  getTests(_TESTSID).then(response => {
+  const _spTestsId = row.spTestsId || ids.value
+  getTests(_spTestsId).then(response => {
     form.value = response.data
     open.value = true
-    title.value = "修改检验项目（LIMS_TESTS）"
+    title.value = "修改方案项目"
   })
 }
 
 /** 提交按钮 */
-function submitForm1() {
-  proxy.$refs["sampleRef"].validate(valid => {
+function submitForm() {
+  proxy.$refs["testsRef"].validate(valid => {
     if (valid) {
-      if (form.value.sampleId != null) {
-        updateSample(form.value).then(response => {
+      if (form.value.spTestsId != null) {
+        updateTests(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功")
           open.value = false
           getList()
         })
       } else {
-        addSample(form.value).then(response => {
+        addTests(form.value).then(response => {
           proxy.$modal.msgSuccess("新增成功")
           open.value = false
           getList()
@@ -425,162 +941,21 @@ function submitForm1() {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const _sampleIds = row.sampleId || ids.value
-  proxy.$modal.confirm('是否确认删除LIMS样品编号为"' + _sampleIds + '"的数据项？').then(function () {
-    return delSample(_sampleIds)
+  const _spTestsIds = row.spTestsId || ids.value
+  proxy.$modal.confirm('是否确认删除方案项目编号为"' + _spTestsIds + '"的数据项？').then(function() {
+    return delTests(_spTestsIds)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess("删除成功")
-  }).catch(() => { })
+  }).catch(() => {})
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('lims/sample/export', {
+  proxy.download('lims/tests/export', {
     ...queryParams.value
-  }, `sample_${new Date().getTime()}.xlsx`)
+  }, `tests_${new Date().getTime()}.xlsx`)
 }
 
-
-
-
-import { ElMessage } from 'element-plus'
-
-const sampleForm = ref(null)
-const formData = ref({
-  name: '',
-  code: 'LAB-' + new Date().getTime().toString().slice(-6),
-  type: '',
-  quantity: null,
-  unit: 'g',
-  submitDate: '',
-  expectedDate: '',
-  tests: [],
-  standard: '',
-  method: '',
-  urgency: 'normal',
-  remarks: '',
-  attachments: []
-})
-
-// 验证规则
-const rules1 = {
-  name: [
-    { required: true, message: '请输入样品名称', trigger: 'blur' },
-    { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
-  ],
-  type: [
-    { required: true, message: '请选择样品类型', trigger: 'change' }
-  ],
-  quantity: [
-    { required: true, message: '请输入样品数量', trigger: 'blur' },
-    { type: 'number', message: '数量必须为数字', trigger: 'blur' },
-    { type: 'number', min: 1, message: '数量必须大于0', trigger: 'blur' }
-  ],
-  submitDate: [
-    { required: true, message: '请选择送样日期', trigger: 'change' }
-  ],
-  expectedDate: [
-    {
-      required: true,
-      message: '请选择期望完成日期',
-      trigger: 'change'
-    },
-    // 防止期望完成早于送样日期
-    {
-      validator: (rule, value, callback) => {
-        if (
-          value &&
-          formData.value.submitDate &&
-          new Date(value) < new Date(formData.value.submitDate)
-        ) {
-          callback(new Error('期望完成日期不能早于送样日期'))
-        } else {
-          callback()
-        }
-      },
-      trigger: 'change'
-    }
-  ],
-  tests: [
-    { required: true, message: '请至少选择一个检测项目', trigger: 'change' }
-  ],
-  standard: [
-    { required: true, message: '请选择检测标准', trigger: 'change' }
-  ],
-  method: [
-    { required: true, message: '请选择检测方法', trigger: 'change' }
-  ]
-}
-
-// 处理文件变化
-const handleFileChange = (file, fileList) => {
-  formData.value.attachments = fileList
-}
-const handleFileRemove = (file, fileList) => {
-  formData.value.attachments = fileList
-}
-
-// 提交表单
-const submitForm = () => {
-  sampleForm.value.validate(valid => {
-    if (valid) {
-      // 在此处调用后端 API 创建检测申请
-      // 例如：await api.addSample(formData.value)
-      // 这里只做模拟
-      setTimeout(() => {
-        ElMessage.success({
-          message: '样品检测申请提交成功！',
-          duration: 3000,
-          showClose: true
-        })
-        resetForm()
-      }, 800)
-    } else {
-      ElMessage.error('请检查表单输入')
-      return false
-    }
-  })
-}
-
-// 重置表单
-const resetForm = () => {
-  sampleForm.value.resetFields()
-  formData.value.code = 'LAB-' + new Date().getTime().toString().slice(-6)
-  formData.value.attachments = []
-}
+getList()
 </script>
-
-<style scoped>
-.form-container {
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-}
-
-.form-header {
-  background: linear-gradient(90deg, #5D8CAE 0%, #3A6B8F 100%);
-  margin: 0;
-  padding: calc(var(--spacing) * 3);
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
-}
-
-.form-card {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(211, 220, 230, 0.6);
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
-}
-
-.sample-icon {
-  background: linear-gradient(135deg, #5D8CAE 0%, #3A6B8F 100%);
-}
-
-.items-center {
-  align-items: center;
-}
-
-.text-form {
-  --tw-text-opacity: 1;
-  color: rgb(93 140 174 / var(--tw-text-opacity, 1));
-}
-</style>

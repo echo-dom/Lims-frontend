@@ -2,23 +2,42 @@
   <div>
     <GenericTable :columnList="columnList" :buttonlist="buttons" :updateDataApi="updateSample" :getDataApi="listSample"
       @handleSelectionChange="handleSelectionChange" @dataLoaded="onDataLoaded" />
-    <Dialog v-model="open"></Dialog>
+    <Dialog v-model="open" @success="getList"></Dialog>
   </div>
 </template>
 
 <script setup name="Sample" lang="ts">
 import GenericTable from '@/components/GenericTable/GenericTable.vue'
-import Dialog from './Dialog'
+import Dialog from './dialog.vue'
 import { listSample, getSample, delSample, addSample, updateSample } from "@/api/lims/sample"
-import {onMounted} from  'vue'
+import { onMounted, ref, reactive, toRefs, watch, getCurrentInstance } from 'vue'
 import column from './column';
-const columnList = column;
+import { ElMessage } from 'element-plus'
+
+const columnList = ref(column);
+const { proxy } = getCurrentInstance()
+const { task_status, lims_sample_status } = proxy.useDict("task_status", "lims_sample_status");
+
+watch(() => task_status.value, (val) => {
+    const col = columnList.value.find(c => c.prop === 'taskStatus');
+    if (col) {
+        col.editType = 'select';
+        col.options = val.map(d => ({ label: d.label, value: d.value }));
+    }
+}, { immediate: true });
+
+watch(() => lims_sample_status.value, (val) => {
+    const col = columnList.value.find(c => c.prop === 'sampleStatus');
+    if (col) {
+        col.editType = 'select';
+        col.options = val.map(d => ({ label: d.label, value: d.value }));
+    }
+}, { immediate: true });
 
 const onDataLoaded = (data) => {
   console.log('Data loaded:', data);
 }
 
-const { proxy } = getCurrentInstance()
 const sampleList = ref([])
 const open = ref(false)
 const loading = ref(true)
@@ -27,6 +46,8 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref("")
+const sampleForm = ref(null)
+
 const buttons = [
   {
     label: '新增',
@@ -62,6 +83,7 @@ const buttons = [
     // tooltip: '暂无数据可导出'
   }
 ]
+
 const data = reactive({
   form: {},
   queryParams: {
@@ -206,10 +228,6 @@ function handleExport() {
     ...queryParams.value
   }, `sample_${new Date().getTime()}.xlsx`)
 }
-
-import { ElMessage } from 'element-plus'
-const sampleForm = ref(null)
-
 </script>
 
 <style scoped>
@@ -244,7 +262,4 @@ const sampleForm = ref(null)
   --tw-text-opacity: 1;
   color: rgb(93 140 174 / var(--tw-text-opacity, 1));
 }
-
-
-
 </style>

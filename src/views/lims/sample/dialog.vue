@@ -1,5 +1,5 @@
 <template>
-    <el-dialog width="80%" height="80%" fullscreen>
+    <el-dialog width="80%" height="80%" fullscreen v-model="visible">
         <template #header>
             <div class="el-dialog__title" style="font-size: 18px;">新增样品</div>
         </template>
@@ -12,7 +12,7 @@
                         样品信息
                     </div>
                 </template>
-                <el-form :rules="rules" :inline="true" :model="formData" class="demo-form-inline" size="default"
+                <el-form ref="ruleFormRef" :rules="rules" :inline="true" :model="formData" class="demo-form-inline" size="default"
                     label-width="155px" label-position="left">
                     <el-row :gutter="20">
                         <el-col :span="8">
@@ -44,8 +44,8 @@
                                 <el-select v-model="formData.customer" filterable remote reserve-keyword
                                     placeholder="请选择客户" prop="customer" remote-show-suffix :remote-method="remoteMethod"
                                     :loading="loading2" @change="changeCustomer">
-                                    <el-option v-for="item in options" :key="item.compcode" :label="item.label"
-                                        :value="item.compcode" />
+                                    <el-option v-for="item in options" :key="item.value" :label="item.label"
+                                        :value="item.value" />
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -71,7 +71,7 @@
                                 <el-select v-model="formData.contract_name" filterable remote reserve-keyword
                                     placeholder="请选择合同" prop="contract_name" remote-show-suffix :remote-method="remoteContractMethod"
                                     :loading="loading">
-                                    <el-option v-for="item in contractOptions" :key="item.compcode" :label="item.label"
+                                    <el-option v-for="item in contractOptions" :key="item.value" :label="item.label"
                                         :value="item.value" />
                                 </el-select>
                             </el-form-item>
@@ -89,6 +89,37 @@
                                     <el-option label="3个工作日" value="3" />
                                     <el-option label="5个工作日" value="5" />
                                     <el-option label="7个工作日" value="7" />
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="20">
+                        <el-col :span="8">
+                            <el-form-item label="来源文件夹编号" prop="fromFolderNo">
+                                <el-input v-model="formData.fromFolderNo" />
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="原始记录名称" prop="originalRecordName">
+                                <el-input v-model="formData.originalRecordName" />
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="主项目数" prop="mainProNum">
+                                <el-input v-model="formData.mainProNum" />
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="20">
+                        <el-col :span="8">
+                            <el-form-item label="任务状态" prop="taskStatus">
+                                <el-select v-model="formData.taskStatus" placeholder="请选择任务状态">
+                                    <el-option
+                                        v-for="dict in task_status"
+                                        :key="dict.value"
+                                        :label="dict.label"
+                                        :value="dict.value"
+                                    />
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -114,24 +145,57 @@
 </template>
 <script setup name="Dialog" lang="ts">
 import { ElMessage } from 'element-plus'
-// 选择客户
 import { listCustomer } from "@/api/lims/customer"
-import { listContractmanagement,  } from "@/api/lims/contractmanagement"
+import { listContractmanagement } from "@/api/lims/contractmanagement"
+import { addSample } from "@/api/lims/sample"
+import type { FormInstance, FormRules } from 'element-plus'
+import { getCurrentInstance, computed, onMounted, ref, reactive } from 'vue'
+
+const props = defineProps({
+    modelValue: {
+        type: Boolean,
+        default: false
+    }
+})
+
+const emit = defineEmits(['update:modelValue', 'success'])
+const { proxy } = getCurrentInstance()
+const { task_status, lims_sample_status } = proxy.useDict("task_status", "lims_sample_status");
+
+watch(() => task_status.value, (val) => {
+    if (val && val.length > 0 && !formData.value.taskStatus) {
+        const defaultItem = val.find(item => item.label === '常规');
+        if (defaultItem) {
+            formData.value.taskStatus = defaultItem.value;
+        }
+    }
+}, { immediate: true });
+
+watch(() => lims_sample_status.value, (val) => {
+    if (val && val.length > 0 && !formData.value.sampleStatus) {
+        const defaultItem = val.find(item => item.label === '新增状态');
+        if (defaultItem) {
+            formData.value.sampleStatus = defaultItem.value;
+        }
+    }
+}, { immediate: true });
+
+const visible = computed({
+    get: () => props.modelValue,
+    set: (val) => emit('update:modelValue', val)
+})
 
 onMounted(() => {
     listCustomer({ pageSize: 1000 }).then(response => {
-        console.log(response.rows)
         list.value = response.rows.map(item => {
             return {
                 label: item.compname,
-                value: item.ccode || '',
+                value: item.customerId,
                 ...item
             }
         })
-
     })
     listContractmanagement({ pageSize: 1000 }).then(response => {
-        console.log(response.rows)
         list2.value = response.rows.map(item => {
             return {
                 label: item.contractname,
@@ -139,10 +203,8 @@ onMounted(() => {
                 ...item
             }
         })
-
     })
 })
-import type { FormInstance, FormRules } from 'element-plus'
 
 const grindingseasonOption = [
     {
@@ -158,12 +220,6 @@ const grindingseasonOption = [
         value: '后期'
     },
 ]
-
-interface RuleForm {
-    customer: string,
-    ccode: string,
-    inspectioncompletiondate: string
-}
 
 const ruleFormRef = ref<FormInstance>()
 
@@ -188,33 +244,32 @@ const rules = reactive<FormRules>({
 })
 const formData = ref({
     customer: '',
-    name: '',
-    code: 'LAB-' + new Date().getTime().toString().slice(-6),
-    type: '',
-    quantity: null,
-    unit: 'g',
-    submitDate: '',
-    expectedDate: '',
-    tests: [],
-    standard: '',
-    method: '',
-    urgency: 'normal',
-    remarks: '',
+    sample_name: '',
+    sample_code: '',
+    sampling_receivecount: 1,
+    samplebatch: 1,
     ccode: '',
-    attachments: [],
+    grindingseason: '',
+    contract_name: '',
     inspectioncompletiondate: '',
-    sampling_receivecount:1,
-    samplebatch:1,
-    manualy:false, // 是否自编
+    period: '',
+    manualy: false, // 是否自编
+    fromFolderNo: '',
+    originalRecordName: '',
+    mainProNum: '',
+    taskStatus: '',
+    sampleStatus: '',
+    paymentStatus: '',
+    auditorDesc: '',
 })
 
 const options = ref([])
 const contractOptions = ref([])
 const list = ref([])
 const list2 = ref([])
-const value = ref<string[]>([])
 const loading2 = ref(false)
 const loading = ref(false)
+
 const remoteMethod = (query: string) => {
     if (query) {
         loading2.value = true
@@ -222,7 +277,7 @@ const remoteMethod = (query: string) => {
             options.value = response.rows.map(item => {
                 return {
                     label: item.compname,
-                    value: item.ccode,
+                    value: item.customerId,
                     ...item
                 }
             })
@@ -250,7 +305,7 @@ const remoteContractMethod = (query: string) => {
     }
 }
 const changeCustomer = (val) => {
-    const ccode = list.value.filter(ite => ite.compcode == val)[0]?.ccode
+    const ccode = list.value.filter(ite => ite.customerId == val)[0]?.ccode
 
     if (!ccode?.trim()) {
         ElMessage.warning('该客户无地址编码,请手动输入！')
@@ -259,7 +314,38 @@ const changeCustomer = (val) => {
 }
 const submit = (formEl: FormInstance | undefined) => {
     if (!formEl) return
-    console.log(formData.value)
+    formEl.validate((valid) => {
+        if (valid) {
+            const data = {
+                sampleName: formData.value.sample_name,
+                customerId: formData.value.customer,
+                batchNumber: formData.value.samplebatch,
+                sampleCode: formData.value.manualy ? formData.value.sample_code : null,
+                // Extra fields that might be needed or stored in remark/other fields
+                // For now, sending them as is, assuming backend DTO might handle or ignore
+                remark: JSON.stringify({
+                    ccode: formData.value.ccode,
+                    grindingseason: formData.value.grindingseason,
+                    contractId: formData.value.contract_name,
+                    inspectioncompletiondate: formData.value.inspectioncompletiondate,
+                    period: formData.value.period,
+                    samplingReceivecount: formData.value.sampling_receivecount
+                }),
+                fromFolderNo: formData.value.fromFolderNo,
+                originalRecordName: formData.value.originalRecordName,
+                mainProNum: formData.value.mainProNum,
+                taskStatus: formData.value.taskStatus,
+                sampleStatus: formData.value.sampleStatus,
+                paymentStatus: formData.value.paymentStatus,
+                auditorDesc: formData.value.auditorDesc
+            }
+            addSample(data).then(response => {
+                ElMessage.success("新增成功")
+                emit('success')
+                visible.value = false
+            })
+        }
+    })
 }
 </script>
 
