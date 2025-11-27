@@ -5,7 +5,7 @@
             <div class="table-title">
                 <el-row :gutter="10" class="mb8">
                     <el-col v-for="button in buttonlist" :span="1.5">
-                        <el-button :disabled="handleButtonDisabled(button.disabled as string|boolean)" :size="button.size" :loading="button.loading" :type="button.type" :plain="button.plain || true" :icon="button.icon" @click="button.onClick" v-hasPermi="[button.hasPermi]">
+                        <el-button :disabled="handleButtonDisabled(button.disabled as string|boolean)" :size="button.size || 'small'" :loading="button.loading" :type="button.type" :plain="button.plain || true" :icon="button.icon" @click="button.onClick" v-hasPermi="[button.hasPermi]" class="compact-button">
                             {{ button.label }}
                         </el-button>
                     </el-col>
@@ -13,14 +13,14 @@
             </div>
             <div class="table-actions">
                 <!-- 自定义列显示 -->
-                <el-button type="primary" plain @click="showColumnConfigDialog = true">
+                <el-button type="primary" plain size="small" @click="showColumnConfigDialog = true" class="compact-button">
                     <el-icon>
                         <Operation />
                     </el-icon> 自定义列
                 </el-button>
                 <!-- 刷新按钮 -->
                 <el-tooltip content="刷新数据" placement="top">
-                    <el-button circle @click="onRefresh">
+                    <el-button circle size="small" @click="onRefresh" class="compact-button">
                         <el-icon>
                             <Refresh />
                         </el-icon>
@@ -270,7 +270,7 @@
                     <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize"
                         :page-sizes="[10, 20, 50, 100, 200,500,1000]" :background="true"
                         layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="onPageSizeChange"
-                        @current-change="onPageChange" class="custom-pagination" />
+                        @current-change="onPageChange" class="custom-pagination" size="small" />
                 </div>
             </div>
         </el-config-provider>
@@ -854,12 +854,12 @@ defineExpose({onRefresh
 /* 容器样式 */
 .a-container {
     height: 100%;
-    padding: 16px;
+    padding: 8px;
     display: flex;
     flex-direction: column;
     background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.06);
 }
 .cell-text {
   display: inline-block;
@@ -875,17 +875,17 @@ defineExpose({onRefresh
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 }
 
 .table-title {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
 
 .title-text {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
     color: #303133;
 }
@@ -901,6 +901,16 @@ defineExpose({onRefresh
     gap: 10px;
 }
 
+/* Compact button styling */
+.compact-button {
+    padding: 5px 12px !important;
+    font-size: 12px !important;
+}
+
+.compact-button.is-circle {
+    padding: 5px !important;
+}
+
 /* 表格容器 */
 .table-container {
     flex: 1;
@@ -913,20 +923,28 @@ defineExpose({onRefresh
 
 .custom-table {
     flex: 1;
-    font-size: 13px;
-    border-radius: 6px;
+    font-size: 12px;
+    border-radius: 4px;
     overflow: hidden;
-    --el-table-border-color: #ebeef5;
+    --el-table-border-color: #e4e7ed;
     --el-table-header-bg-color: #f5f7fa;
 }
 
 .custom-table :deep(.el-table__header) {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
 }
 
 .custom-table :deep(.el-table__body) {
-    font-size: 13px;
+    font-size: 12px;
+}
+
+.custom-table :deep(.el-table__cell) {
+    padding: 6px 0;
+}
+
+.custom-table :deep(.el-table th.el-table__cell) {
+    padding: 8px 0;
 }
 
 /* 列标题与筛选 */
@@ -983,8 +1001,8 @@ defineExpose({onRefresh
 
 /* 分页 */
 .custom-pagination {
-    margin-top: 16px;
-    padding: 8px 0;
+    margin-top: 5px;
+    padding: 2px 0;
     background: #fff;
     border-radius: 4px;
 }
@@ -993,7 +1011,7 @@ defineExpose({onRefresh
     display: flex;
     justify-content: flex-end;
     margin-top: 0px;
-    padding: 8px 0;
+    padding: 2px 0;
     background: #fff;
     border-radius: 4px;
 }
@@ -1080,7 +1098,7 @@ defineExpose({onRefresh
     display: flex;
     flex-direction: column;
     position: relative;
-    min-height: 60px;
+    min-height: 50px;
 }
 
 .column-title-row {
