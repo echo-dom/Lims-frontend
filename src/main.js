@@ -8,6 +8,7 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import locale from 'element-plus/es/locale/lang/zh-cn'
 
 import '@/assets/styles/index.scss' // global css
+import '@/assets/tailwind.css'
 import App from './App'
 import store from './store'
 import router from './router'
@@ -28,7 +29,7 @@ import './permission' // permission control
 import { useDict } from '@/utils/dict'
 import { getConfigKey } from "@/api/system/config"
 import { parseTime, resetForm, addDateRange, handleTree, selectDictLabel, selectDictLabels } from '@/utils/ruoyi'
-import '@/assets/tailwind.css'
+
 
 // 分页组件
 import Pagination from '@/components/Pagination'

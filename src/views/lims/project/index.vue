@@ -1,8 +1,6 @@
 <template>
   <div class="project-page" style="height: calc(100vh - 84px);">
-    <splitpanes horizontal class="default-theme">
-      <pane size="50">
-        <div style="height: 100%; overflow: auto;">
+    <div :style="{ height: `${topPaneHeight}%` }">
           <GenericTable
             ref="tableRef"
             :columnList="columnList"
@@ -14,6 +12,10 @@
             @handleRowClick="handleRowClick"
           />
         </div>
+         <!-- 可拖拽分隔条 -->
+        <DraggableDivider mode="horizontal"
+      :initial-position="topPaneHeight"
+      @position-change="handleHorizontalDividerChange" />
         <Dialog
           ref="dialogRef"
           v-model="open"
@@ -22,14 +24,9 @@
           :rules="rules"
           @submit="submitForm"
           @cancel="cancel"
-        />
-      </pane>
-      <pane size="50">
-        <div style="height: 100%; overflow: auto;">
+        /><div  :style="{ height: `${100 - topPaneHeight}%` }">
           <TestsIndex :projectId="selectedProjectId" :programCode="selectedProgramCode" />
         </div>
-      </pane>
-    </splitpanes>
   </div>
 </template>
 
@@ -42,7 +39,11 @@ import column from "./column"
 import { listProject, getProject, delProject, addProject, updateProject } from "@/api/lims/project"
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
-
+import DraggableDivider from './DraggableDivider.vue'
+const handleHorizontalDividerChange = (newPosition) => {
+      topPaneHeight.value = newPosition
+    }
+const topPaneHeight = ref(50)
 const columnList = column
 const tableRef = ref()
 const dialogRef = ref()
@@ -188,4 +189,11 @@ function refreshTable() {
   tableRef.value?.onRefresh?.()
 }
 </script>
+<style lang="scss">
+.horizontal-layout {
+  @apply flex flex-col h-full;
+}
 
+.top-pane, .bottom-pane {
+  @apply bg-white border border-gray-200 rounded p-4 overflow-auto;
+}</style>

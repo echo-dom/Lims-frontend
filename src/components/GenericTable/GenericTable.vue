@@ -51,20 +51,58 @@
                                 <div class="column-header-wrapper">
                                     <div class="column-title-row">
                                         <div class="column-title" :class="col.editable?'editable-row':''">{{ col.label }}</div>
-                                        <el-button 
-                                            link 
-                                            size="small" 
-                                            :type="activeFilters[col.prop]?.length ? 'primary' : 'default'"
-                                            @click.stop="openFilterDialog(col)"
-                                            class="filter-button-header"
-                                            title="筛选">
-                                            <el-badge badge-style="padding:4px;font-size: 10px;" :offset="[8, 0]" type="primary" v-if="activeFilters[col.prop]?.length" :value="activeFilters[col.prop].length" class="item">
-                                                <el-icon><Operation /></el-icon>
-                                            </el-badge>
-                                            <el-icon v-else><Operation /></el-icon>
-                                        </el-button>
+                                        <el-popover
+                                            placement="bottom"
+                                            :width="250"
+                                            trigger="click"
+                                            @show="initFilter(col)"
+                                        >
+                                            <template #reference>
+                                                <el-button 
+                                                    link 
+                                                    size="small" 
+                                                    :type="activeFilters[col.prop]?.length ? 'primary' : 'default'"
+                                                    class="filter-button-header"
+                                                    title="筛选"
+                                                    @click.stop
+                                                >
+                                                    <el-badge badge-style="padding:4px;font-size: 10px;" :offset="[8, 0]" type="primary" v-if="activeFilters[col.prop]?.length" :value="activeFilters[col.prop].length" class="item">
+                                                        <el-icon><Operation /></el-icon>
+                                                    </el-badge>
+                                                    <el-icon v-else><Operation /></el-icon>
+                                                </el-button>
+                                            </template>
+                                            <div class="filter-popup-content">
+                                                <div class="filter-header">
+                                                    <span>筛选: {{ col.label }}</span>
+                                                </div>
+                                                <el-input
+                                                    v-model="filterSearchText"
+                                                    placeholder="查找选项..."
+                                                    clearable
+                                                    size="small"
+                                                    class="filter-search-input"
+                                                >
+                                                    <template #prefix>
+                                                        <el-icon><Search /></el-icon>
+                                                    </template>
+                                                </el-input>
+                                                <div class="filter-actions-row">
+                                                    <el-link type="primary" :underline="false" @click="handleSelectAll(col)">全选</el-link>
+                                                    <el-link type="primary" :underline="false" @click="handleClear(col)">清空</el-link>
+                                                </div>
+                                                <el-scrollbar max-height="200px" class="filter-list">
+                                                    <el-checkbox-group v-model="activeFilters[col.prop]" @change="handleFilterChange">
+                                                        <div v-for="item in getFilteredOptions(col)" :key="item.value" class="filter-item">
+                                                            <el-checkbox :label="item.value">{{ item.text }}</el-checkbox>
+                                                        </div>
+                                                    </el-checkbox-group>
+                                                    <div v-if="getFilteredOptions(col).length === 0" class="filter-empty">无匹配项</div>
+                                                </el-scrollbar>
+                                            </div>
+                                        </el-popover>
                                     </div>
-                                    <div class="filter-container">
+                                    <div class="filter-container" @click.stop>
                                         <el-input v-if="!col.type" v-model="col.keyword" @keyup.enter.native="onSearchDebounced"
                                             size="small" placeholder="搜索" clearable class="filter-input">
                                             <template #prefix>
@@ -179,42 +217,7 @@
                     </template>
                 </el-table>
 
-                <!-- Excel 式筛选对话框 -->
-                <el-dialog 
-                    v-model="showFilterDialog" 
-                    :title="`筛选: ${currentFilterColumn?.label || ''}`" 
-                    width="400px" 
-                    append-to-body>
-                    <div class="filter-dialog-content">
-                        <el-input
-                            v-model="filterSearchText"
-                            placeholder="搜索筛选值"
-                            clearable
-                            size="small"
-                            style="margin-bottom: 10px;">
-                            <template #prefix>
-                                <el-icon><Search /></el-icon>
-                            </template>
-                        </el-input>
-                        <el-scrollbar height="300px">
-                            <el-checkbox-group 
-                                v-model="selectedFilterValues" 
-                                class="filter-checkbox-group">
-                                <el-checkbox 
-                                    v-for="item in filteredFilterOptions" 
-                                    :key="item.value" 
-                                    :label="item.value"
-                                    class="filter-checkbox">
-                                    {{ item.text }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-scrollbar>
-                        <div class="filter-actions">
-                            <el-button size="small" @click="clearFilter">清除筛选</el-button>
-                            <el-button size="small" type="primary" @click="applyFilter">确定</el-button>
-                        </div>
-                    </div>
-                </el-dialog>
+
 
                 <!-- 列配置对话框 -->
                 <el-dialog v-model="showColumnConfigDialog" title="列配置" width="600px" append-to-body>
@@ -556,49 +559,43 @@ const filterHandler = (value: any, row: any, column: any, prop?: string) => {
     return true;
 };
 
-// Excel 式筛选对话框
-const showFilterDialog = ref(false);
-const currentFilterColumn = ref<ColumnItem | null>(null);
-const selectedFilterValues = ref<any[]>([]);
+// 下拉式筛选逻辑
 const filterSearchText = ref('');
 
-const filteredFilterOptions = computed(() => {
-    if (!currentFilterColumn.value) return [];
-    const options = buildFilter(currentFilterColumn.value.prop);
+function initFilter(col: ColumnItem) {
+    // 初始化筛选：确保 activeFilters 中有该列的数组
+    if (!activeFilters.value[col.prop]) {
+        activeFilters.value[col.prop] = [];
+    }
+    filterSearchText.value = '';
+}
+
+function getFilteredOptions(col: ColumnItem) {
+    const options = buildFilter(col.prop);
     if (!filterSearchText.value) return options;
     const searchLower = filterSearchText.value.toLowerCase();
     return options.filter(opt => 
         String(opt.text).toLowerCase().includes(searchLower)
     );
-});
-
-
-function openFilterDialog(col: ColumnItem) {
-    currentFilterColumn.value = col;
-    selectedFilterValues.value = activeFilters.value[col.prop] || [];
-    filterSearchText.value = '';
-    showFilterDialog.value = true;
 }
 
-function applyFilter() {
-    if (!currentFilterColumn.value) return;
-    const prop = currentFilterColumn.value.prop;
-    if (selectedFilterValues.value.length === 0) {
-        delete activeFilters.value[prop];
-    } else {
-        activeFilters.value[prop] = [...selectedFilterValues.value];
-    }
-    // 筛选逻辑通过 computed tableData 自动应用，不需要手动触发
-    showFilterDialog.value = false;
+function handleSelectAll(col: ColumnItem) {
+    const options = getFilteredOptions(col);
+    const allValues = options.map(opt => opt.value);
+    // 合并已选和新选（去重），或者直接全选当前搜索结果
+    // 这里简单实现：全选当前搜索结果中的所有项
+    const current = activeFilters.value[col.prop] || [];
+    const newValues = [...new Set([...current, ...allValues])];
+    activeFilters.value[col.prop] = newValues;
 }
 
-function clearFilter() {
-    if (!currentFilterColumn.value) return;
-    const prop = currentFilterColumn.value.prop;
-    delete activeFilters.value[prop];
-    selectedFilterValues.value = [];
-    // 筛选逻辑通过 computed tableData 自动应用
-    showFilterDialog.value = false;
+function handleClear(col: ColumnItem) {
+    activeFilters.value[col.prop] = [];
+}
+
+function handleFilterChange() {
+    // 筛选值变化时，computed tableData 会自动更新
+    // 如果需要额外操作（如保存筛选状态），可以在这里处理
 }
 
 // 获取当前筛选值（用于 :filtered-value）
@@ -1178,28 +1175,38 @@ defineExpose({onRefresh
     text-align: right;
 }
 
-/* 筛选对话框 */
-.filter-dialog-content {
+/* 筛选弹出框 */
+.filter-popup-content {
+    padding: 10px;
+}
+.filter-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ebeef5;
+    padding-bottom: 8px;
+}
+.filter-search-input {
+    margin-bottom: 10px;
+}
+.filter-actions-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 0 5px;
+}
+.filter-list {
+    border: 1px solid #ebeef5;
+    border-radius: 4px;
+    padding: 5px;
+}
+.filter-item {
+    padding: 2px 0;
+}
+.filter-empty {
+    text-align: center;
+    color: #909399;
     padding: 10px 0;
-}
-
-.filter-checkbox-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.filter-checkbox {
-    display: flex;
-    align-items: center;
-    padding: 4px 0;
-}
-
-.filter-actions {
-    margin-top: 15px;
-    text-align: right;
-    padding-top: 10px;
-    border-top: 1px solid #ebeef5;
+    font-size: 12px;
 }
 
 </style>

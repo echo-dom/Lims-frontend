@@ -150,18 +150,24 @@ function toggleTheme() {
     height: 100%;
     line-height: 50px;
     display: flex;
+    align-items: center;
 
     &:focus {
       outline: none;
     }
 
     .right-menu-item {
-      display: inline-block;
+      display: flex;
       padding: 0 8px;
-      height: 100%;
+      // height: 100%;
       font-size: 18px;
       color: #5a5e66;
       vertical-align: text-bottom;
+
+      svg {
+        display: inline-block;
+        vertical-align: middle;
+      }
 
       &.hover-effect {
         cursor: pointer;
@@ -200,6 +206,8 @@ function toggleTheme() {
           width: 30px;
           height: 30px;
           border-radius: 50%;
+          display: inline-block;
+          vertical-align: middle;
         }
 
         .user-nickname{

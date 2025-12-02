@@ -74,6 +74,7 @@ const getLogoTextColor = computed(() => {
       height: 32px;
       vertical-align: middle;
       margin-right: 12px;
+      display: inline-block;
     }
 
     & .sidebar-title {
