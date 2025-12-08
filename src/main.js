@@ -9,6 +9,10 @@ import locale from 'element-plus/es/locale/lang/zh-cn'
 
 import '@/assets/styles/index.scss' // global css
 import '@/assets/tailwind.css'
+import VXETable from 'vxe-table'
+import 'vxe-table/lib/style.css'
+import VxeUI from 'vxe-pc-ui'
+import 'vxe-pc-ui/lib/style.css'
 import App from './App'
 import store from './store'
 import router from './router'
@@ -72,6 +76,8 @@ app.use(router)
 app.use(store)
 app.use(plugins)
 app.use(elementIcons)
+app.use(VxeUI)
+app.use(VXETable)
 app.component('svg-icon', SvgIcon)
 
 directive(app)

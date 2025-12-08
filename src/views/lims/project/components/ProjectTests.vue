@@ -1,23 +1,9 @@
 <template>
   <div class="app-container">
-    <GenericTable
-      ref="tableRef"
-      :columnList="columnList"
-      :buttonlist="buttons"
-      :getDataApi="getData"
-      :updateDataApi="updateTests"
-      storageKey="lims_tests_columns"
-      @handleSelectionChange="handleSelectionChange"
-    />
-    <Dialog
-      ref="dialogRef"
-      v-model="open"
-      :title="title"
-      :form="form"
-      :rules="rules"
-      @submit="submitForm"
-      @cancel="cancel"
-    />
+    <GenericTable ref="tableRef" :columnList="columnList" :buttonlist="buttons" :getDataApi="getData"
+      :updateDataApi="updateSpTests" storageKey="lims_tests_columns" @handleSelectionChange="handleSelectionChange" />
+    <Dialog ref="dialogRef" v-model="open" :title="title" :form="form" :rules="rules" @submit="submitForm"
+      @cancel="cancel" />
   </div>
 </template>
 
@@ -162,7 +148,7 @@ function handleDelete(row) {
   }).then(() => {
     proxy.$modal.msgSuccess("删除成功")
     refreshTable()
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 function handleExport() {

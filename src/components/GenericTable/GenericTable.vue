@@ -5,7 +5,10 @@
             <div class="table-title">
                 <el-row :gutter="10" class="mb8">
                     <el-col v-for="button in buttonlist" :span="1.5">
-                        <el-button :disabled="handleButtonDisabled(button.disabled as string|boolean)" :size="button.size || 'small'" :loading="button.loading" :type="button.type" :plain="button.plain || true" :icon="button.icon" @click="button.onClick" v-hasPermi="[button.hasPermi]" class="compact-button">
+                        <el-button :disabled="handleButtonDisabled(button.disabled as string | boolean)"
+                            :size="button.size || 'small'" :loading="button.loading" :type="button.type"
+                            :plain="button.plain || true" :icon="button.icon" @click="button.onClick"
+                            v-hasPermi="[button.hasPermi]" class="compact-button">
                             {{ button.label }}
                         </el-button>
                     </el-col>
@@ -13,7 +16,8 @@
             </div>
             <div class="table-actions">
                 <!-- 自定义列显示 -->
-                <el-button type="primary" plain size="small" @click="showColumnConfigDialog = true" class="compact-button">
+                <el-button type="primary" plain size="small" @click="showColumnConfigDialog = true"
+                    class="compact-button">
                     <el-icon>
                         <Operation />
                     </el-icon> 自定义列
@@ -32,79 +36,82 @@
         <!-- 表格主体 -->
         <el-config-provider :locale="locale">
             <div class="table-container">
-                <el-table  ref="tableRef" :data="tableData" v-loading.lock="loading"
-                    @selection-change="handleSelectionChange" @row-click="handleRowClick"
-                    highlight-current-row stripe border class="custom-table" :header-cell-style="headerCellStyle">
+                <el-table ref="tableRef" :data="tableData" v-loading.lock="loading"
+                    @selection-change="handleSelectionChange" @row-click="handleRowClick" highlight-current-row stripe
+                    border class="custom-table" :header-cell-style="headerCellStyle">
                     <!-- 复选框列 -->
                     <el-table-column fixed type="selection" width="55" align="center" />
                     <!-- 序号列 -->
                     <el-table-column label="序号" fixed type="index" width="55" align="center" />
 
                     <!-- 动态列 -->
-                     <template v-for="col in visibleColumns">
-                        <el-table-column  v-if="!(col as any).hidden" :key="col.prop" :prop="col.prop" :label="col.label"
+                    <template v-for="col in visibleColumns">
+                        <el-table-column v-if="!(col as any).hidden" :key="col.prop" :prop="col.prop" :label="col.label"
                             :width="col.width" :min-width="col.minWidth || 120" align="center" show-overflow-tooltip
-                            :fixed="getColumnFixed(col)" 
-                            :column-key="col.prop" sortable>
+                            :fixed="getColumnFixed(col)" :column-key="col.prop" sortable>
                             <!-- 自定义表头：保留搜索 -->
                             <template #header>
                                 <div class="column-header-wrapper">
                                     <div class="column-title-row">
-                                        <div class="column-title" :class="col.editable?'editable-row':''">{{ col.label }}</div>
-                                        <el-popover
-                                            placement="bottom"
-                                            :width="250"
-                                            trigger="click"
-                                            @show="initFilter(col)"
-                                        >
+                                        <div class="column-title" :class="col.editable ? 'editable-row' : ''">{{
+                                            col.label
+                                        }}</div>
+                                        <el-popover placement="bottom" :width="250" trigger="click"
+                                            @show="initFilter(col)">
                                             <template #reference>
-                                                <el-button 
-                                                    link 
-                                                    size="small" 
+                                                <el-button link size="small"
                                                     :type="activeFilters[col.prop]?.length ? 'primary' : 'default'"
-                                                    class="filter-button-header"
-                                                    title="筛选"
-                                                    @click.stop
-                                                >
-                                                    <el-badge badge-style="padding:4px;font-size: 10px;" :offset="[8, 0]" type="primary" v-if="activeFilters[col.prop]?.length" :value="activeFilters[col.prop].length" class="item">
-                                                        <el-icon><Operation /></el-icon>
+                                                    class="filter-button-header" title="筛选" @click.stop>
+                                                    <el-badge badge-style="padding:4px;font-size: 10px;"
+                                                        :offset="[8, 0]" type="primary"
+                                                        v-if="activeFilters[col.prop]?.length"
+                                                        :value="activeFilters[col.prop].length" class="item">
+                                                        <el-icon>
+                                                            <Operation />
+                                                        </el-icon>
                                                     </el-badge>
-                                                    <el-icon v-else><Operation /></el-icon>
+                                                    <el-icon v-else>
+                                                        <Operation />
+                                                    </el-icon>
                                                 </el-button>
                                             </template>
                                             <div class="filter-popup-content">
                                                 <div class="filter-header">
                                                     <span>筛选: {{ col.label }}</span>
                                                 </div>
-                                                <el-input
-                                                    v-model="filterSearchText"
-                                                    placeholder="查找选项..."
-                                                    clearable
-                                                    size="small"
-                                                    class="filter-search-input"
-                                                >
+                                                <el-input v-model="filterSearchText" placeholder="查找选项..." clearable
+                                                    size="small" class="filter-search-input">
                                                     <template #prefix>
-                                                        <el-icon><Search /></el-icon>
+                                                        <el-icon>
+                                                            <Search />
+                                                        </el-icon>
                                                     </template>
                                                 </el-input>
                                                 <div class="filter-actions-row">
-                                                    <el-link type="primary" :underline="false" @click="handleSelectAll(col)">全选</el-link>
-                                                    <el-link type="primary" :underline="false" @click="handleClear(col)">清空</el-link>
+                                                    <el-link type="primary" :underline="false"
+                                                        @click="handleSelectAll(col)">全选</el-link>
+                                                    <el-link type="primary" :underline="false"
+                                                        @click="handleClear(col)">清空</el-link>
                                                 </div>
                                                 <el-scrollbar max-height="200px" class="filter-list">
-                                                    <el-checkbox-group v-model="activeFilters[col.prop]" @change="handleFilterChange">
-                                                        <div v-for="item in getFilteredOptions(col)" :key="item.value" class="filter-item">
-                                                            <el-checkbox :label="item.value">{{ item.text }}</el-checkbox>
+                                                    <el-checkbox-group v-model="activeFilters[col.prop]"
+                                                        @change="handleFilterChange">
+                                                        <div v-for="item in getFilteredOptions(col)" :key="item.value"
+                                                            class="filter-item">
+                                                            <el-checkbox :label="item.value">{{ item.text
+                                                                }}</el-checkbox>
                                                         </div>
                                                     </el-checkbox-group>
-                                                    <div v-if="getFilteredOptions(col).length === 0" class="filter-empty">无匹配项</div>
+                                                    <div v-if="getFilteredOptions(col).length === 0"
+                                                        class="filter-empty">无匹配项</div>
                                                 </el-scrollbar>
                                             </div>
                                         </el-popover>
                                     </div>
                                     <div class="filter-container" @click.stop>
-                                        <el-input v-if="!col.type" v-model="col.keyword" @keyup.enter.native="onSearchDebounced"
-                                            size="small" placeholder="搜索" clearable class="filter-input">
+                                        <el-input v-if="!col.type" v-model="col.keyword"
+                                            @keyup.enter.native="onSearchDebounced" size="small" placeholder="搜索"
+                                            clearable class="filter-input">
                                             <template #prefix>
                                                 <el-icon>
                                                     <Search />
@@ -112,11 +119,13 @@
                                             </template>
                                         </el-input>
                                         <div v-if="col.type === 'date'" class="date-filter">
-                                            <el-date-picker v-model="col.keyword" type="date" placeholder="开始日期" size="small"
-                                                value-format="YYYY-MM-DD" @change="onSearchDebounced" class="date-picker" />
+                                            <el-date-picker v-model="col.keyword" type="date" placeholder="开始日期"
+                                                size="small" value-format="YYYY-MM-DD" @change="onSearchDebounced"
+                                                class="date-picker" />
                                             <span class="date-separator">至</span>
-                                            <el-date-picker v-model="col.keyword2" type="date" placeholder="结束日期" size="small"
-                                                value-format="YYYY-MM-DD" @change="onSearchDebounced" class="date-picker" />
+                                            <el-date-picker v-model="col.keyword2" type="date" placeholder="结束日期"
+                                                size="small" value-format="YYYY-MM-DD" @change="onSearchDebounced"
+                                                class="date-picker" />
                                         </div>
                                     </div>
                                 </div>
@@ -136,10 +145,11 @@
                                             <span class="cell-text">
                                                 <template v-if="col.type === 'date'">
                                                     {{ scope.row[col.prop] ? formatDateByYMD(scope.row[col.prop],
-                                                    'yyyy-MM-dd') : '' }}
+                                                        'yyyy-MM-dd') : '' }}
                                                 </template>
                                                 <template v-else-if="col.editType === 'select' && col.options">
-                                                    {{ col.options.find(opt => opt.value == scope.row[col.prop])?.label || scope.row[col.prop] }}
+                                                    {{col.options.find(opt => opt.value == scope.row[col.prop])?.label
+                                                        || scope.row[col.prop]}}
                                                 </template>
                                                 <template v-else>
                                                     {{ scope.row[col.prop] }}
@@ -148,23 +158,24 @@
                                         </template>
                                         <template v-else>
                                             <!-- 值为空时渲染一个不可见占位，让区域可点 -->
-                                            <span class="cell-empty-placeholder" style="visibility: hidden;">&nbsp;</span>
+                                            <span class="cell-empty-placeholder"
+                                                style="visibility: hidden;">&nbsp;</span>
                                         </template>
                                     </div>
 
                                     <!-- 非编辑列（只读）或者当前在别处编辑时，普通展示（也可用同样方式撑满区域但不绑定点击）-->
-                                    <div v-else-if="!col.editable"
-                                        class="readonly-cell-wrapper"
+                                    <div v-else-if="!col.editable" class="readonly-cell-wrapper"
                                         style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
                                         <template
                                             v-if="scope.row[col.prop] !== undefined && scope.row[col.prop] !== null && scope.row[col.prop] !== ''">
                                             <span class="cell-text ellipsis">
                                                 <template v-if="col.type === 'date'">
                                                     {{ scope.row[col.prop] ? formatDateByYMD(scope.row[col.prop],
-                                                    'yyyy-MM-dd') : '' }}
+                                                        'yyyy-MM-dd') : '' }}
                                                 </template>
                                                 <template v-else-if="col.editType === 'select' && col.options">
-                                                    {{ col.options.find(opt => opt.value == scope.row[col.prop])?.label || scope.row[col.prop] }}
+                                                    {{col.options.find(opt => opt.value == scope.row[col.prop])?.label
+                                                        || scope.row[col.prop]}}
                                                 </template>
                                                 <template v-else>
                                                     {{ scope.row[col.prop] }}
@@ -173,7 +184,8 @@
                                         </template>
                                         <template v-else>
                                             <!-- 只读列值为空时，也可渲染占位，或者直接空白，但包裹容器已经撑满 -->
-                                            <span class="cell-empty-placeholder" style="visibility: hidden;">&nbsp;</span>
+                                            <span class="cell-empty-placeholder"
+                                                style="visibility: hidden;">&nbsp;</span>
                                         </template>
                                     </div>
 
@@ -191,8 +203,8 @@
                                         <!-- 数字编辑 -->
                                         <el-input-number v-else-if="col.editType === 'number'"
                                             v-model="editCache[getRowKey(scope.row)][col.prop]" size="small"
-                                            @blur="() => saveEdit(scope.row, col)" @change="() => saveEdit(scope.row, col)"
-                                            style="width: 100%;" />
+                                            @blur="() => saveEdit(scope.row, col)"
+                                            @change="() => saveEdit(scope.row, col)" style="width: 100%;" />
                                         <!-- 日期编辑 -->
                                         <el-date-picker v-else-if="col.editType === 'date'"
                                             v-model="editCache[getRowKey(scope.row)][col.prop]" type="date" size="small"
@@ -206,8 +218,8 @@
                                                 :value="opt.value" />
                                         </el-select>
                                         <!-- fallback 文本 -->
-                                        <el-input v-else v-model="editCache[getRowKey(scope.row)][col.prop]" size="small"
-                                            @blur="() => saveEdit(scope.row, col)"
+                                        <el-input v-else v-model="editCache[getRowKey(scope.row)][col.prop]"
+                                            size="small" @blur="() => saveEdit(scope.row, col)"
                                             @keyup.enter.native="() => saveEdit(scope.row, col)" style="width: 100%;" />
                                     </div>
                                 </div>
@@ -230,28 +242,21 @@
                             </el-alert>
                         </div>
                         <div class="column-config-list">
-                            <draggable 
-                                v-model="localColumns" 
-                                item-key="prop" 
-                                handle=".drag-handle"
-                                :animation="200"
+                            <draggable v-model="localColumns" item-key="prop" handle=".drag-handle" :animation="200"
                                 @end="onColumnDragEnd">
                                 <template #item="{ element: col }">
                                     <div class="column-config-item">
                                         <div class="drag-handle">
-                                            <el-icon><Rank /></el-icon>
+                                            <el-icon>
+                                                <Rank />
+                                            </el-icon>
                                         </div>
-                                        <el-checkbox 
-                                            v-model="col.visible" 
-                                            :label="col.prop"
+                                        <el-checkbox v-model="col.visible" :label="col.prop"
                                             @change="onColumnVisibleChange">
                                             <span class="column-label">{{ col.label }}</span>
                                         </el-checkbox>
-                                        <el-select 
-                                            v-model="col.fixed" 
-                                            size="small" 
-                                            style="width: 100px; margin-left: auto;"
-                                            placeholder="固定列"
+                                        <el-select v-model="col.fixed" size="small"
+                                            style="width: 100px; margin-left: auto;" placeholder="固定列"
                                             @change="onColumnFixedChange">
                                             <el-option label="不固定" :value="false" />
                                             <el-option label="左侧固定" value="left" />
@@ -271,7 +276,7 @@
                 <!-- 分页 -->
                 <div class="pagination-container">
                     <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize"
-                        :page-sizes="[10, 20, 50, 100, 200,500,1000]" :background="true"
+                        :page-sizes="[10, 20, 50, 100, 200, 500, 1000]" :background="true"
                         layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="onPageSizeChange"
                         @current-change="onPageChange" class="custom-pagination" size="small" />
                 </div>
@@ -307,20 +312,20 @@ interface ColumnItem {
     // 其他自定义字段...
 }
 interface ButtonItem {
-  label: string             // 按钮显示文本
-  icon?: string             // Element Plus 的图标名，如 "el-icon-plus"
-  type?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'default'
-  size?: 'large' | 'default' | 'small'
-  plain?: boolean           // 是否朴素按钮
-  round?: boolean           // 是否圆角
-  circle?: boolean          // 是否圆形按钮
-  disabled?: string | boolean        // 是否禁用
-  loading?: boolean         // 是否加载中
-  tooltip?: string          // 鼠标悬停提示
-  visible?: boolean         // 是否显示按钮，默认 true
-  confirm?: string          // 可选：点击前弹出确认信息
-  onClick?: () => void      // 点击事件回调
-  hasPermi: string;  // 是否有权限
+    label: string             // 按钮显示文本
+    icon?: string             // Element Plus 的图标名，如 "el-icon-plus"
+    type?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'default'
+    size?: 'large' | 'default' | 'small'
+    plain?: boolean           // 是否朴素按钮
+    round?: boolean           // 是否圆角
+    circle?: boolean          // 是否圆形按钮
+    disabled?: string | boolean        // 是否禁用
+    loading?: boolean         // 是否加载中
+    tooltip?: string          // 鼠标悬停提示
+    visible?: boolean         // 是否显示按钮，默认 true
+    confirm?: string          // 可选：点击前弹出确认信息
+    onClick?: () => void      // 点击事件回调
+    hasPermi: string;  // 是否有权限
 }
 
 
@@ -329,7 +334,7 @@ const props = defineProps<{
     getDataApi: (params: Record<string, any>) => Promise<{ rows: any[]; total: number }>;
     updateDataApi?: (payload: Record<string, any>) => Promise<any>;
     title?: string;
-    buttonlist:ButtonItem[];
+    buttonlist: ButtonItem[];
     storageKey?: string;       // localStorage 存储键名，用于持久化列配置
 }>();
 const emits = defineEmits<{
@@ -346,7 +351,7 @@ const rawTableData = ref<any[]>([]); // 原始数据
 const tableData = computed(() => {
     // 应用筛选逻辑
     let filtered = [...rawTableData.value];
-    
+
     // 遍历所有激活的筛选
     Object.keys(activeFilters.value).forEach(prop => {
         const activeValues = activeFilters.value[prop];
@@ -354,7 +359,7 @@ const tableData = computed(() => {
             filtered = filtered.filter(row => activeValues.includes(row[prop]));
         }
     });
-    
+
     return filtered;
 });
 const total = ref(0);
@@ -574,7 +579,7 @@ function getFilteredOptions(col: ColumnItem) {
     const options = buildFilter(col.prop);
     if (!filterSearchText.value) return options;
     const searchLower = filterSearchText.value.toLowerCase();
-    return options.filter(opt => 
+    return options.filter(opt =>
         String(opt.text).toLowerCase().includes(searchLower)
     );
 }
@@ -663,18 +668,18 @@ function isEditing(row: any, prop: string): boolean {
 // 保存编辑：将 editCache 中值写回 row，调用后端更新（如有）
 async function saveEdit(row: any, col: ColumnItem) {
     const rowKey = getRowKey(row);
-    console.log('|| editingCell.value.prop',editingCell.value)
-    if (!editingCell.value || editingCell.value.prop !== col.prop ) return;
+    console.log('|| editingCell.value.prop', editingCell.value)
+    if (!editingCell.value || editingCell.value.prop !== col.prop) return;
     const newValue = editCache[rowKey]?.[col.prop];
     // 可在此添加校验逻辑，若不合法则 return 并提示
     if (newValue === row[col.prop]) {
         editingCell.value = null;
         return
     };
-    
+
     // 写回 row 数据
     row[col.prop] = newValue;
-    console.log('col',row)
+    console.log('col', row)
     // 若提供 updateDataApi，则调用后端更新
     if (props.updateDataApi) {
         try {
@@ -762,7 +767,7 @@ function buildSearchParams() {
     });
     return params;
 }
-function onSearch(init:boolean=false) {
+function onSearch(init: boolean = false) {
     currentPage.value = !init ? 1 : currentPage.value;
     const params = buildSearchParams();
     getData(params);
@@ -793,27 +798,27 @@ function onRefresh() {
     getData();
 }
 // 根据行选择控制按钮是否禁用
-const handleButtonDisabled = (val:string | boolean)=>{
-    if(val == 'single'){
+const handleButtonDisabled = (val: string | boolean) => {
+    if (val == 'single') {
         return single.value
-    }else if(val == 'multiple'){
+    } else if (val == 'multiple') {
         return multiple.value
     }
     return val
-}   
+}
 
 // 行选择
 function handleSelectionChange(val: any[]) {
     single.value = val.length != 1
     multiple.value = !val.length
-    emits('handleSelectionChange',val)
+    emits('handleSelectionChange', val)
     multipleSelection.value = val;
 }
 function handleRowClick(row: any) {
     tableRef.value?.clearSelection();
     tableRef.value?.toggleRowSelection(row, true);
-    emits('handleRowClick',row)
-    
+    emits('handleRowClick', row)
+
 }
 
 // 监听路由变化时刷新
@@ -841,13 +846,13 @@ const headerCellStyle = computed(() => ({
 const locale = computed(() => zhCn);
 
 // 向父节点暴露方法
-defineExpose({onRefresh
+defineExpose({
+    onRefresh
 
 })
 </script>
 
 <style scoped>
-
 /* 容器样式 */
 .a-container {
     height: 100%;
@@ -858,13 +863,14 @@ defineExpose({onRefresh
     border-radius: 4px;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.06);
 }
+
 .cell-text {
-  display: inline-block;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
+    display: inline-block;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
 }
 
 /* 表头 */
@@ -955,9 +961,10 @@ defineExpose({onRefresh
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
 /* 是否可编辑列 */
-.editable-row{
-    color:#409EFF
+.editable-row {
+    color: var(--el-color-primary)
 }
 
 .filter-container {
@@ -1084,8 +1091,8 @@ defineExpose({onRefresh
 }
 
 /* 超出文本...显示 */
-.ellipsis{
-     overflow: hidden;
+.ellipsis {
+    overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -1162,7 +1169,7 @@ defineExpose({onRefresh
 }
 
 .drag-handle:hover {
-    color: #409eff;
+    color: var(--el-color-primary);
 }
 
 .column-config-item .column-label {
@@ -1179,34 +1186,39 @@ defineExpose({onRefresh
 .filter-popup-content {
     padding: 10px;
 }
+
 .filter-header {
     font-weight: bold;
     margin-bottom: 10px;
     border-bottom: 1px solid #ebeef5;
     padding-bottom: 8px;
 }
+
 .filter-search-input {
     margin-bottom: 10px;
 }
+
 .filter-actions-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
     padding: 0 5px;
 }
+
 .filter-list {
     border: 1px solid #ebeef5;
     border-radius: 4px;
     padding: 5px;
 }
+
 .filter-item {
     padding: 2px 0;
 }
+
 .filter-empty {
     text-align: center;
     color: #909399;
     padding: 10px 0;
     font-size: 12px;
 }
-
 </style>

@@ -1,32 +1,18 @@
 <template>
   <div class="project-page" style="height: calc(100vh - 84px);">
     <div :style="{ height: `${topPaneHeight}%` }">
-          <GenericTable
-            ref="tableRef"
-            :columnList="columnList"
-            :buttonlist="buttons"
-            :getDataApi="listProject"
-            :updateDataApi="updateProject"
-            storageKey="lims_project_columns"
-            @handleSelectionChange="handleSelectionChange"
-            @handleRowClick="handleRowClick"
-          />
-        </div>
-         <!-- 可拖拽分隔条 -->
-        <DraggableDivider mode="horizontal"
-      :initial-position="topPaneHeight"
+      <GenericTable ref="tableRef" :columnList="columnList" :buttonlist="buttons" :getDataApi="listProject"
+        :updateDataApi="updateProject" storageKey="lims_project_columns" @handleSelectionChange="handleSelectionChange"
+        @handleRowClick="handleRowClick" />
+    </div>
+    <!-- 可拖拽分隔条 -->
+    <DraggableDivider mode="horizontal" :initial-position="topPaneHeight"
       @position-change="handleHorizontalDividerChange" />
-        <Dialog
-          ref="dialogRef"
-          v-model="open"
-          :title="title"
-          :form="form"
-          :rules="rules"
-          @submit="submitForm"
-          @cancel="cancel"
-        /><div  :style="{ height: `${100 - topPaneHeight}%` }">
-          <TestsIndex :projectId="selectedProjectId" :programCode="selectedProgramCode" />
-        </div>
+    <Dialog ref="dialogRef" v-model="open" :title="title" :form="form" :rules="rules" @submit="submitForm"
+      @cancel="cancel" />
+    <div :style="{ height: `${100 - topPaneHeight}%` }">
+      <TestsIndex :projectId="selectedProjectId" :programCode="selectedProgramCode" />
+    </div>
   </div>
 </template>
 
@@ -39,10 +25,10 @@ import column from "./column"
 import { listProject, getProject, delProject, addProject, updateProject } from "@/api/lims/project"
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
-import DraggableDivider from './DraggableDivider.vue'
+import DraggableDivider from '../../../components/DraggableDivider/DraggableDivider.vue'
 const handleHorizontalDividerChange = (newPosition) => {
-      topPaneHeight.value = newPosition
-    }
+  topPaneHeight.value = newPosition
+}
 const topPaneHeight = ref(50)
 const columnList = column
 const tableRef = ref()
@@ -138,7 +124,7 @@ function handleDelete(row) {
   }).then(() => {
     proxy.$modal.msgSuccess("删除成功")
     refreshTable()
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 function handleExport() {
@@ -194,6 +180,8 @@ function refreshTable() {
   @apply flex flex-col h-full;
 }
 
-.top-pane, .bottom-pane {
+.top-pane,
+.bottom-pane {
   @apply bg-white border border-gray-200 rounded p-4 overflow-auto;
-}</style>
+}
+</style>
